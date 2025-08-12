@@ -141,10 +141,10 @@ Debe incluir:
 ## 📨 ¿Cómo entregar?
 
 1. Haz un **fork privado** de este repositorio.
-2. Agrega como colaborador a `TU_USUARIO_GITHUB`.
+2. Agrega como colaborador a `David-Sol-AI`.
 3. Sube tu solución al repositorio.
-4. Agrega tu documento técnico (`documentacion.pdf`) en la raíz.
-5. Envía un correo a `talento@empresa.com` con el enlace a tu repositorio y cualquier comentario adicional.
+4. Agrega tu documento técnico (`documentacion.pdf` o `documentacion.md`) en la raíz.
+5. Envía un correo a `projectmanagerengineer@elsolnec.org` con el enlace a tu repositorio y cualquier comentario adicional.
 
 ---
 
