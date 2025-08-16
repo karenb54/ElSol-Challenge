@@ -205,3 +205,36 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+# carpetas
+pruebas/
+
+# MLOps - Datos y Modelos
+database/vector_db/
+*.bin
+*.sqlite3
+*.db
+
+# Modelos descargados
+models/
+*.pt
+*.pth
+*.onnx
+
+# Logs y métricas
+logs/
+*.log
+mlruns/
+wandb/
+
+# Cache y archivos temporales
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Archivos de configuración local
+.env.local
+.env.production
