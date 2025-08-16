@@ -308,18 +308,18 @@ def main():
 def start_telegram_bot_delayed():
     """Inicia el bot de Telegram con delay para esperar que la API se levante"""
     def run_bot():
-        print("⏰ Esperando 10 segundos para que la API se inicialice...")
+        print(" Esperando 10 segundos para que la API se inicialice...")
         time.sleep(10)
         
         try:
-            print("🤖 Iniciando Bot de Telegram...")
+            print(" Iniciando Bot de Telegram...")
             from services.telegram_bot import main as bot_main
             bot_main()
         except ImportError:
-            print("❌ Error: No se pudo importar services/telegram_bot.py")
+            print(" Error: No se pudo importar services/telegram_bot.py")
             print("   Asegúrate de que telegram_bot.py esté en la carpeta services/")
         except Exception as e:
-            print(f"❌ Error ejecutando bot: {e}")
+            print(f" Error ejecutando bot: {e}")
     
     # Ejecutar el bot en un hilo separado
     bot_thread = threading.Thread(target=run_bot, daemon=True)
@@ -328,15 +328,15 @@ def start_telegram_bot_delayed():
 
 def run_api_with_bot():
     """Ejecuta la API y el bot de Telegram juntos"""
-    print("🚀 Iniciando ElSol Challenge - API + Bot de Telegram")
+    print(" Iniciando ElSol Challenge - API + Bot de Telegram")
     print("=" * 60)
     
     # Inicializar servicios
     try:
         initialize_services()
-        print("✅ Servicios inicializados correctamente")
+        print(" Servicios inicializados correctamente")
     except Exception as e:
-        print(f"❌ Error inicializando servicios: {e}")
+        print(f" Error inicializando servicios: {e}")
         return
     
     # Iniciar bot en hilo separado
@@ -348,7 +348,7 @@ def run_api_with_bot():
     print("   API: http://localhost:8000")
     print("   Docs: http://localhost:8000/docs")
     print("   Bot: @ElSolMedicalApi_bot")
-    print("\n⚠️  Para detener ambos servicios: Ctrl+C")
+    print("\n⚠  Para detener ambos servicios: Ctrl+C")
     print("=" * 60)
     
     try:
@@ -360,9 +360,9 @@ def run_api_with_bot():
             log_level="info"
         )
     except KeyboardInterrupt:
-        print("\n👋 Deteniendo servicios...")
+        print("\n Deteniendo servicios...")
     except Exception as e:
-        print(f"❌ Error en servidor: {e}")
+        print(f" Error en servidor: {e}")
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="ElSol Challenge - Sistema de Conversaciones Médicas")
