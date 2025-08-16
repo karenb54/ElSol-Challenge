@@ -105,7 +105,7 @@ class ConversationProcessor:
         conversation_details = patient_data.get('conversation_details', {})
         
         summary = f"""
-📋 RESUMEN DE CONVERSACIÓN
+RESUMEN DE CONVERSACIÓN
 ==========================
 ID: {patient_data.get('conversation_id', 'N/A')}
 Paciente: {patient_info.get('name', 'No identificado')}
@@ -150,7 +150,7 @@ def process_single_conversation(audio_file: str, promoter_id: str = "promoter_00
             # Mostrar estadísticas del almacenamiento vectorial
             if processor.vector_service:
                 vector_stats = processor.vector_service.get_collection_stats()
-                print(f"\n📊 Estadísticas del Almacenamiento Vectorial (Chroma):")
+                print(f"\n Estadísticas del Almacenamiento Vectorial (Chroma):")
                 print(f"   Total pacientes: {vector_stats.get('total_patients', 0)}")
                 print(f"   Total conversaciones: {vector_stats.get('total_conversations', 0)}")
                 print(f"   Tamaño de la BD: {vector_stats.get('vector_db_size_mb', 0):.2f} MB")

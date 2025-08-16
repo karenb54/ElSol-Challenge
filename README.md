@@ -2,6 +2,8 @@
 
 Sistema de procesamiento de conversaciones médicas que transcribe audio, extrae información estructurada y proporciona un chatbot inteligente basado en datos vectorizados.
 
+> **Nota**: Este es un fork del proyecto original de [David-Sol-AI/ElSol-Challenge](https://github.com/David-Sol-AI/ElSol-Challenge)
+
 ## Características Principales
 
 - **Transcripción de Audio**: Procesamiento automático de archivos de audio (.wav, .mp3, .m4a, .flac)
@@ -13,65 +15,13 @@ Sistema de procesamiento de conversaciones médicas que transcribe audio, extrae
 ## Arquitectura del Sistema
 
 ```mermaid
-graph TB
-    subgraph "API Layer"
-        API[FastAPI Server<br/>main.py]
-        DOCS[Swagger Docs<br/>/docs]
-    end
-    
-    subgraph "Audio Processing"
-        AUDIO[Audio Files<br/>.wav, .mp3, .m4a, .flac]
-        FFMPEG[FFmpeg<br/>Audio Processing]
-        WHISPER[Whisper Model<br/>Transcription]
-    end
-    
-    subgraph "AI Services"
-        CHAT[Chat Service<br/>Gemini API]
-        TRANSCRIPT[Transcription Service<br/>OpenAI Whisper]
-    end
-    
-    subgraph "Database Layer"
-        VECTOR[Vector Store Service<br/>ChromaDB]
-        SEARCH[Search Service<br/>Semantic Search]
-        PATIENT[Patient Service<br/>Patient Operations]
-        CHROMA[(ChromaDB<br/>Vector Database)]
-    end
-    
-    subgraph "Utilities"
-        CONFIG[Config Service<br/>Environment & Settings]
-    end
-    
-    %% API Connections
-    API --> CHAT
-    API --> TRANSCRIPT
-    API --> VECTOR
-    
-    %% Audio Flow
-    AUDIO --> FFMPEG
-    FFMPEG --> WHISPER
-    WHISPER --> TRANSCRIPT
-    TRANSCRIPT --> VECTOR
-    
-    %% Database Connections
-    VECTOR --> SEARCH
-    VECTOR --> PATIENT
-    VECTOR --> CHROMA
-    
-    %% Service Dependencies
-    CHAT --> SEARCH
-    CHAT --> CONFIG
-    TRANSCRIPT --> CONFIG
-    VECTOR --> CONFIG
-    
-    %% External APIs
-    CHAT -.-> GEMINI[Google Gemini API]
-    
-    style API fill:#e1f5fe
-    style CHAT fill:#f3e5f5
-    style TRANSCRIPT fill:#e8f5e8
-    style VECTOR fill:#fff3e0
-    style CHROMA fill:#ffebee
-    style GEMINI fill:#f1f8e9
+graph LR
+    A[Audio File] --> B[FastAPI]
+    B --> C[Whisper]
+    C --> D[ChromaDB]
+    B --> E[Gemini Chat]
+    E --> D
+    D --> F[Response]
 ```
 
 ## Prerrequisitos
@@ -170,21 +120,6 @@ python test/test_api.py
 python test/test_chat_gemini.py
 ```
 
-### Testing Manual con curl
-```bash
-# Health check
-curl -X GET "http://localhost:8000/"
-
-# Procesar audio
-curl -X POST "http://localhost:8000/process-audio" \
-     -F "file=@pruebas/p_52015966_552.wav"
-
-# Chat médico
-curl -X POST "http://localhost:8000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{"question": "¿Qué síntomas tiene Juan Pérez?"}'
-```
-
 ## Supuestos del Sistema
 
 1. **Formato de Audio**: Soporta .wav, .mp3, .m4a, .flac
@@ -227,7 +162,8 @@ ElSol-Challenge/
 ├── services/              # Servicios de la aplicación
 │   ├── __init__.py
 │   ├── transcription_service.py  # Servicio de transcripción
-│   └── chat_service.py           # Servicio de chat con LLM
+│   ├── chat_service.py           # Servicio de chat con LLM
+│   └── process_conversation.py   # Orquestador de conversaciones
 │
 ├── database/              # Capa de base de datos
 │   ├── __init__.py

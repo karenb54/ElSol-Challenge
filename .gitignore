@@ -211,9 +211,15 @@ pruebas/
 
 # MLOps - Datos y Modelos
 database/vector_db/
+database/vector_db/**/*
 *.bin
 *.sqlite3
 *.db
+chroma.sqlite3
+data_level0.bin
+header.bin
+length.bin
+link_lists.bin
 
 # Modelos descargados
 models/
