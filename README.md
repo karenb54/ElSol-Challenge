@@ -1,191 +1,43 @@
-# 🏥 ElSol Challenge - Sistema de Procesamiento de Conversaciones Médicas
+# ElSol Challenge - Medical Conversation API
 
-## 📋 Descripción del Proyecto
+Sistema de procesamiento de conversaciones médicas que transcribe audio, extrae información estructurada y proporciona un chatbot inteligente basado en datos vectorizados.
 
-Este proyecto implementa un sistema completo para procesar conversaciones médicas entre promotores y pacientes. El sistema incluye:
+## Características Principales
 
-- **🎙️ Transcripción de Audio**: Usando Whisper local para transcribir archivos de audio
-- **🧠 Almacenamiento Vectorial**: Usando Chroma para almacenar información médica de forma vectorial
-- **💬 Chatbot Inteligente**: API para hacer consultas sobre pacientes usando LLM
-- **🔍 Búsqueda Semántica**: Capacidad de buscar pacientes por síntomas, diagnósticos, etc.
+- **Transcripción de Audio**: Procesamiento automático de archivos de audio (.wav, .mp3, .m4a, .flac)
+- **Extracción de Información**: Análisis automático de datos del paciente (nombre, edad, síntomas, medicamentos)
+- **Base de Datos Vectorial**: Almacenamiento semántico usando ChromaDB
+- **Chatbot Inteligente**: Asistente médico basado en Google Gemini que responde consultas contextuales
+- **API REST**: Interfaz completa con documentación automática
 
-## 🚀 Instrucciones para Correr el Proyecto
-
-### Prerrequisitos
-
-1. **Python 3.10+**
-2. **FFmpeg** instalado y configurado
-3. **Variables de entorno** configuradas (opcional para chatbot)
-
-### Instalación
-
-1. **Clonar el repositorio:**
-```bash
-git clone <repository-url>
-cd ElSol-Challenge
-```
-
-2. **Crear entorno virtual:**
-```bash
-python -m venv venv
-# En Windows:
-venv\Scripts\activate
-# En Linux/Mac:
-source venv/bin/activate
-```
-
-3. **Instalar dependencias:**
-```bash
-pip install -r requirements.txt
-```
-
-4. **Configurar FFmpeg:**
-   - Descargar desde: https://ffmpeg.org/download.html
-   - Configurar la ruta en `utils/config.py`
-
-5. **Configurar variables de entorno (opcional):**
-```bash
-# Copiar el archivo de ejemplo
-cp .env.example .env
-# Editar con tus credenciales de OpenAI/Azure
-```
-
-### Ejecución
-
-#### Modo API (Recomendado)
-```bash
-python main.py --api
-```
-- Servidor disponible en: http://localhost:8000
-- Documentación automática: http://localhost:8000/docs
-
-#### Modo Consola
-```bash
-python main.py
-```
-- Procesa archivos de prueba automáticamente
-
-## 📡 Endpoints Disponibles
-
-### 1. 🏠 Root - Información del API
-```
-GET http://localhost:8000/
-```
-**Justificación:** Endpoint de salud (health check) que proporciona información básica del servicio, versión y lista de endpoints disponibles. Esencial para monitoreo y documentación.
-
-### 2. 📁 Procesamiento de Audio
-```
-POST http://localhost:8000/process-audio
-```
-**Justificación:** Endpoint principal del sistema que:
-- Recibe archivos de audio directamente (.wav, .mp3, .m4a, .flac)
-- Los guarda en la carpeta `pruebas/`
-- Procesa la transcripción automáticamente usando Whisper
-- Extrae información estructurada del paciente
-- Almacena datos vectorizados en ChromaDB
-- Retorna confirmación de guardado exitoso con el nombre del paciente
-
-### 3. 💬 Chatbot Inteligente
-```
-POST http://localhost:8000/chat
-```
-**Justificación:** Endpoint del chatbot médico que:
-- Recibe preguntas en lenguaje natural
-- Analiza el tipo de pregunta (paciente específico, síntomas, diagnósticos, etc.)
-- Busca información relevante en la base vectorial de manera semántica
-- Genera respuestas contextuales usando LLM (OpenAI/Hugging Face)
-- Ejemplos: "¿Qué enfermedad tiene Pepito Gómez?", "Listame pacientes con diabetes", "¿Qué síntomas tiene Juan Pérez?"
-
-## 🧪 Cómo Testear la Funcionalidad
-
-### 1. Probar Procesamiento de Audio
-```bash
-curl -X POST "http://localhost:8000/process-audio" \
-     -F "file=@pruebas/p_52015966_552.wav"
-```
-
-### 2. Probar Chatbot
-```bash
-curl -X POST "http://localhost:8000/chat" \
-     -H "Content-Type: application/json" \
-     -d '{"question": "¿Qué síntomas tiene Juan Pérez?"}'
-```
-
-### 3. Probar API Health
-```bash
-curl "http://localhost:8000/"
-```
-
-### 4. Ejecutar Tests Automáticos
-```bash
-python test_api.py
-```
-
-## 🤔 Supuestos Hechos
-
-1. **Formato de Audio**: Se asume que los archivos de audio están en formatos comunes (.wav, .mp3, .m4a, .flac)
-2. **Calidad de Audio**: Se asume una calidad mínima para transcripción efectiva
-3. **Idioma**: Se asume que las conversaciones están en español
-4. **Estructura de Datos**: Se asume que la información médica sigue patrones comunes
-5. **LLM**: Se asume disponibilidad de OpenAI o Hugging Face para el chatbot
-
-## ✅ Buenas Prácticas Aplicadas
-
-### **Arquitectura Modular:**
-- **Separación de responsabilidades**: Cada servicio tiene una función específica
-- **Servicios independientes**: Fácil mantenimiento y escalabilidad
-- **Inyección de dependencias**: Servicios se inicializan de forma limpia
-
-### **Gestión de Datos:**
-- **Validación con Pydantic**: Asegura integridad de datos
-- **Manejo de errores**: Respuestas consistentes y informativas
-- **Logging estructurado**: Facilita debugging y monitoreo
-
-### **Seguridad:**
-- **Validación de archivos**: Verificación de tipos y tamaños
-- **Limpieza de datos**: Sanitización de inputs
-- **Manejo seguro de credenciales**: Variables de entorno
-
-### **Performance:**
-- **Almacenamiento vectorial**: Búsquedas semánticas eficientes
-- **Caché de modelos**: Whisper se carga una sola vez
-- **Procesamiento asíncrono**: No bloquea el servidor
-
-### **Documentación:**
-- **API auto-documentada**: Swagger/OpenAPI automático
-- **Docstrings completos**: Documentación en código
-- **README detallado**: Instrucciones claras
-
-## 📁 Estructura del Proyecto
-
-### 🏗️ Arquitectura del Sistema
+## Arquitectura del Sistema
 
 ```mermaid
 graph TB
-    subgraph "🌐 API Layer"
+    subgraph "API Layer"
         API[FastAPI Server<br/>main.py]
         DOCS[Swagger Docs<br/>/docs]
     end
     
-    subgraph "🎙️ Audio Processing"
+    subgraph "Audio Processing"
         AUDIO[Audio Files<br/>.wav, .mp3, .m4a, .flac]
         FFMPEG[FFmpeg<br/>Audio Processing]
         WHISPER[Whisper Model<br/>Transcription]
     end
     
-    subgraph "🧠 AI Services"
+    subgraph "AI Services"
         CHAT[Chat Service<br/>Gemini API]
         TRANSCRIPT[Transcription Service<br/>OpenAI Whisper]
     end
     
-    subgraph "💾 Database Layer"
+    subgraph "Database Layer"
         VECTOR[Vector Store Service<br/>ChromaDB]
         SEARCH[Search Service<br/>Semantic Search]
         PATIENT[Patient Service<br/>Patient Operations]
         CHROMA[(ChromaDB<br/>Vector Database)]
     end
     
-    subgraph "🔧 Utilities"
+    subgraph "Utilities"
         CONFIG[Config Service<br/>Environment & Settings]
     end
     
@@ -222,120 +74,247 @@ graph TB
     style GEMINI fill:#f1f8e9
 ```
 
-### 📂 Estructura de Archivos
+## Prerrequisitos
+
+- Python 3.8+
+- FFmpeg instalado y configurado
+- Cuenta de Google Cloud con API de Gemini habilitada
+
+## Instalación
+
+1. **Clonar el repositorio**
+   ```bash
+   git clone <repository-url>
+   cd ElSol-Challenge
+   ```
+
+2. **Crear entorno virtual**
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate  # Windows
+   source venv/bin/activate  # Linux/Mac
+   ```
+
+3. **Instalar dependencias**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configurar variables de entorno**
+   Crear archivo `.env` en la raíz del proyecto:
+   ```env
+   GEMINI_API_KEY=tu_api_key_de_gemini
+   ```
+
+## Ejecución
+
+### Modo API (Recomendado)
+```bash
+python main.py --api
+```
+- Servidor disponible en: http://localhost:8000
+- Documentación automática: http://localhost:8000/docs
+
+### Modo Consola
+```bash
+python main.py
+```
+
+## Endpoints de la API
+
+### 1. Health Check
+- **GET** `/`
+- **Descripción**: Verifica el estado del servidor
+- **Respuesta**: Información del sistema y endpoints disponibles
+
+### 2. Procesamiento de Audio
+- **POST** `/process-audio`
+- **Descripción**: Sube un archivo de audio, lo transcribe y almacena la información
+- **Parámetros**: `file` (archivo de audio)
+- **Respuesta**: Confirmación de procesamiento exitoso
+
+### 3. Chat Inteligente
+- **POST** `/chat`
+- **Descripción**: Chatbot médico que responde consultas basadas en datos vectorizados
+- **Parámetros**: `question` (pregunta del usuario)
+- **Respuesta**: Respuesta contextual del asistente médico
+
+## Casos de Uso del Chatbot
+
+### Consultas Médicas
+- "¿Cuántos pacientes hay registrados?"
+- "¿Qué síntomas tiene Juan Pérez?"
+- "¿Qué pacientes tienen fiebre?"
+- "¿Hay pacientes con diabetes?"
+- "Créame un plan de cuidado para Juan Pérez"
+
+### Consultas No Médicas
+- "¿Qué hora es?"
+- "Hola, ¿cómo estás?"
+- El chatbot responde de manera natural sin usar información médica
+
+## Testing
+
+### Ejecutar Todos los Tests
+```bash
+# Test de transcripción
+python test/test_whisper.py
+
+# Test de base de datos
+python test/test_chroma.py
+
+# Test completo de API
+python test/test_api.py
+
+# Test del chatbot
+python test/test_chat_gemini.py
+```
+
+### Testing Manual con curl
+```bash
+# Health check
+curl -X GET "http://localhost:8000/"
+
+# Procesar audio
+curl -X POST "http://localhost:8000/process-audio" \
+     -F "file=@pruebas/p_52015966_552.wav"
+
+# Chat médico
+curl -X POST "http://localhost:8000/chat" \
+     -H "Content-Type: application/json" \
+     -d '{"question": "¿Qué síntomas tiene Juan Pérez?"}'
+```
+
+## Supuestos del Sistema
+
+1. **Formato de Audio**: Soporta .wav, .mp3, .m4a, .flac
+2. **Idioma**: Transcripción optimizada para español
+3. **Información del Paciente**: Extracción automática de nombre, edad, género, síntomas
+4. **Priorización**: Clasificación automática de urgencia (alta/normal)
+5. **Persistencia**: Datos almacenados en ChromaDB con directorio `database/vector_db/`
+6. **Seguridad**: Variables de entorno para API keys sensibles
+
+## Buenas Prácticas Implementadas
+
+### Arquitectura
+- **Separación de responsabilidades**: Servicios modulares y especializados
+- **Inyección de dependencias**: Configuración centralizada
+- **Manejo de errores**: Try-catch robusto en todas las operaciones
+- **Logging**: Registro detallado de operaciones
+
+### Código
+- **Docstrings**: Documentación completa de clases y métodos
+- **Type hints**: Tipado estático para mejor mantenibilidad
+- **Modularización**: Código organizado en servicios específicos
+- **Tests**: Cobertura completa con tests unitarios e integración
+
+### Seguridad
+- **Variables de entorno**: API keys en archivo .env
+- **Validación de entrada**: Pydantic para validación de datos
+- **Manejo de archivos**: Validación de tipos y tamaños
+- **Directorio temporal**: Tests sin afectar datos reales
+
+## Estructura del Proyecto
 
 ```
 ElSol-Challenge/
-├── main.py                    # Punto de entrada (consola + API)
-├── requirements.txt           # Dependencias del proyecto
-├── README.md                 # Documentación principal
-├── test_api.py              # Tests automáticos
-├── test_chat_gemini.py      # Tests del chatbot
-├── test_gemini_rest.py      # Tests de Gemini API
-├── services/
+├── main.py                 # Punto de entrada de la aplicación
+├── requirements.txt        # Dependencias del proyecto
+├── README.md              # Documentación principal
+├── .env                   # Variables de entorno (no versionado)
+├── .gitignore            # Archivos excluidos del versionado
+│
+├── services/              # Servicios de la aplicación
 │   ├── __init__.py
-│   ├── transcription_service.py  # Transcripción con Whisper
-│   └── chat_service.py           # Chatbot con Gemini
-├── database/
+│   ├── transcription_service.py  # Servicio de transcripción
+│   └── chat_service.py           # Servicio de chat con LLM
+│
+├── database/              # Capa de base de datos
 │   ├── __init__.py
-│   ├── vector_store_service.py   # Servicio principal de almacenamiento
+│   ├── vector_store_service.py   # Servicio principal de ChromaDB
 │   ├── search_service.py         # Búsquedas semánticas
 │   ├── patient_service.py        # Operaciones de pacientes
-│   └── vector_db/                # Base de datos vectorial (Chroma)
-├── utils/
+│   └── vector_db/               # Datos de ChromaDB (no versionado)
+│
+├── utils/                 # Utilidades y configuración
 │   ├── __init__.py
-│   └── config.py                 # Configuración del sistema
-└── pruebas/                     # Archivos de audio de prueba
+│   └── config.py          # Configuración centralizada
+│
+├── test/                  # Tests del sistema
+│   ├── test_api.py        # Tests de endpoints de API
+│   ├── test_whisper.py    # Tests de transcripción
+│   ├── test_chroma.py     # Tests de base de datos
+│   └── test_chat_gemini.py # Tests del chatbot
+│
+└── pruebas/               # Archivos de audio de prueba (no versionado)
     ├── p_51994013_222.mp3
     └── p_52015966_552.wav
 ```
 
-## 🔧 Configuración Avanzada
+## Configuración Avanzada
 
 ### Variables de Entorno
-```bash
-# OpenAI Configuration
-AZURE_OPENAI_API_KEY=your_openai_api_key_here
-AZURE_OPENAI_API_VERSION=2023-12-01-preview
-AZURE_OPENAI_API_ENDPOINT=your_azure_endpoint_here
-AZURE_OPENAI_DEPLOYMENT=your_deployment_name_here
+```env
+# Google Gemini API
+GEMINI_API_KEY=tu_api_key_de_gemini
 
-# Hugging Face (alternativa gratuita)
-HUGGINGFACE_TOKEN=your_huggingface_token_here
-
-# Application Configuration
-UPLOAD_FOLDER=uploads
-MAX_FILE_SIZE=52428800  # 50MB in bytes
-
-# FFmpeg Configuration (Windows)
-FFMPEG_PATH=C:\Program Files\ffmpeg\ffmpeg-master-latest-win64-gpl-shared\ffmpeg-master-latest-win64-gpl-shared\bin
+# Configuración de FFmpeg
+FFMPEG_PATH=C:\Program Files\ffmpeg\bin
 ```
-
-### Configuración de Whisper
-- **Modelo**: "base" (equilibrio entre velocidad y precisión)
-- **Idioma**: Español (detectado automáticamente)
-- **Formato de salida**: Texto estructurado con metadatos
 
 ### Configuración de ChromaDB
-- **Persistencia**: Local en carpeta `database/vector_db/`
-- **Colecciones**: patients, conversations, symptoms
+- **Directorio de persistencia**: `database/vector_db/`
+- **Colecciones**: `patients`, `conversations`, `symptoms`
 - **Embeddings**: Automáticos con ChromaDB
 
-## 🚨 Troubleshooting
+## Troubleshooting
 
-### Error de FFmpeg
-```bash
-# Verificar instalación
-ffmpeg -version
-# Agregar al PATH si es necesario
-```
+### Problemas Comunes
 
-### Error de Whisper
-```bash
-# Verificar espacio en disco
-# Verificar conexión a internet (primera descarga)
-# Verificar permisos de escritura
-```
+1. **Error de FFmpeg**
+   - Verificar que FFmpeg esté instalado y en el PATH
+   - Configurar ruta manual en `transcription_service.py`
 
-### Error de OpenAI
-```bash
-# Verificar variables de entorno
-echo $AZURE_OPENAI_API_KEY
-# Verificar configuración de Azure
-```
+2. **Error de API Key de Gemini**
+   - Verificar que `GEMINI_API_KEY` esté en el archivo `.env`
+   - Confirmar que la API key sea válida
 
-### Error de ChromaDB
-```bash
-# Eliminar carpeta database/vector_db/ para reiniciar
-rm -rf database/vector_db/
-# Verificar permisos de escritura
-```
+3. **Error de transcripción**
+   - Verificar formato de audio soportado
+   - Confirmar que el archivo no esté corrupto
 
-## 📈 Próximos Pasos
+4. **Error de base de datos**
+   - Verificar permisos de escritura en `database/vector_db/`
+   - Eliminar directorio y reiniciar para recrear colecciones
 
-1. **Mejoras de Performance:**
-   - Implementar caché Redis
-   - Optimizar embeddings
-   - Procesamiento en lotes
+### Logs y Debugging
+- Los logs detallados se muestran en la consola
+- Usar `--debug` para información adicional
+- Revisar logs de ChromaDB en `database/vector_db/`
 
-2. **Funcionalidades Adicionales:**
-   - Autenticación y autorización
-   - Dashboard web
-   - Exportación de reportes
-   - Integración con sistemas médicos
+## Contribución
 
-3. **Escalabilidad:**
-   - Docker containerization
-   - Kubernetes deployment
-   - Load balancing
-   - Base de datos distribuida
+1. Fork el proyecto
+2. Crear rama para feature (`git checkout -b feature/AmazingFeature`)
+3. Commit cambios (`git commit -m 'Add AmazingFeature'`)
+4. Push a la rama (`git push origin feature/AmazingFeature`)
+5. Abrir Pull Request
 
-4. **Análisis Avanzado:**
-   - Análisis de sentimientos
-   - Detección de patrones médicos
-   - Predicción de diagnósticos
-   - Alertas automáticas
+## Licencia
 
----
+Este proyecto está bajo la Licencia MIT. Ver el archivo `LICENSE` para más detalles.
 
-**🎉 ¡El sistema está listo para procesar conversaciones médicas de manera inteligente y eficiente!**
+## Contacto
+
+- **Proyecto**: ElSol Challenge - Medical Conversation API
+- **Versión**: 1.0.0
+- **Última actualización**: Agosto 2025
+- **Estado**: Completado y funcional
+- **Características implementadas**:
+  - Transcripción de audio con Whisper
+  - Almacenamiento vectorial con ChromaDB
+  - Chatbot inteligente con Google Gemini
+  - API REST completa con FastAPI
+  - Tests unitarios e integración
+  - Documentación profesional sin emojis
+  - Código modular y bien documentado

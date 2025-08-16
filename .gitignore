@@ -238,3 +238,4 @@ htmlcov/
 # Archivos de configuración local
 .env.local
 .env.production
+.env.temp

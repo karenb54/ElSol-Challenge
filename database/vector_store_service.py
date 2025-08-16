@@ -17,8 +17,20 @@ from .patient_service import PatientService
 
 class VectorStoreService:
     """
-    Servicio para almacenamiento vectorial de información médica
-    Usa Chroma como base de datos vectorial
+    Servicio de almacenamiento vectorial usando ChromaDB.
+    
+    Este servicio proporciona funcionalidad completa para almacenar y buscar
+    información médica de manera vectorial. Utiliza ChromaDB para crear
+    embeddings semánticos que permiten búsquedas inteligentes por similitud.
+    
+    Attributes:
+        persist_directory (str): Directorio donde se almacenan los datos de ChromaDB
+        client: Cliente de ChromaDB
+        patients_collection: Colección para datos de pacientes
+        conversations_collection: Colección para conversaciones
+        symptoms_collection: Colección para síntomas
+        search_service: Servicio de búsquedas semánticas
+        patient_service: Servicio de operaciones de pacientes
     """
     
     def __init__(self, persist_directory: str = "database/vector_db"):
@@ -44,7 +56,7 @@ class VectorStoreService:
     def _setup_chroma(self):
         """Configura Chroma y crea las colecciones necesarias"""
         try:
-            print(f"🔧 Configurando Chroma en: {self.persist_directory}")
+            print(f"Configurando Chroma en: {self.persist_directory}")
             
             # Crear directorio si no existe
             os.makedirs(self.persist_directory, exist_ok=True)
@@ -61,10 +73,10 @@ class VectorStoreService:
             # Crear o obtener colecciones
             self._create_collections()
             
-            print("✅ Chroma configurado correctamente")
+            print("Chroma configurado correctamente")
             
         except Exception as e:
-            print(f"❌ Error configurando Chroma: {e}")
+            print(f"Error configurando Chroma: {e}")
             raise
     
     def _create_collections(self):
@@ -88,10 +100,10 @@ class VectorStoreService:
                 metadata={"description": "Síntomas médicos vectorizados"}
             )
             
-            print("✅ Colecciones creadas/obtenidas correctamente")
+            print("Colecciones creadas/obtenidas correctamente")
             
         except Exception as e:
-            print(f"❌ Error creando colecciones: {e}")
+            print(f"Error creando colecciones: {e}")
             raise
     
     def _setup_services(self):
@@ -106,9 +118,9 @@ class VectorStoreService:
                 self.patients_collection,
                 self.persist_directory
             )
-            print("✅ Servicios modulares configurados")
+            print("Servicios modulares configurados")
         except Exception as e:
-            print(f"❌ Error configurando servicios: {e}")
+            print(f"Error configurando servicios: {e}")
             raise
     
     def _generate_embedding_text(self, patient_data: Dict[str, Any]) -> str:
@@ -209,16 +221,27 @@ class VectorStoreService:
     
     def store_patient_data(self, patient_data: Dict[str, Any]) -> str:
         """
-        Almacena los datos del paciente en el almacenamiento vectorial
+        Almacena los datos del paciente en el almacenamiento vectorial.
+        
+        Este método procesa los datos del paciente y los almacena tanto de manera
+        estructurada (metadatos) como no estructurada (texto para embeddings).
+        Permite búsquedas tanto por filtros exactos como por similitud semántica.
         
         Args:
-            patient_data: Datos del paciente extraídos de la transcripción
-            
+            patient_data (Dict[str, Any]): Datos del paciente con estructura:
+                - patient_info: Información personal del paciente
+                - medical_info: Información médica (síntomas, medicamentos, etc.)
+                - transcription: Transcripción completa de la conversación
+                - conversation_details: Detalles de la conversación
+                
         Returns:
-            ID del documento almacenado
+            str: ID único del documento almacenado
+            
+        Raises:
+            Exception: Si hay error en el almacenamiento
         """
         try:
-            print(f"💾 Almacenando datos vectoriales para: {patient_data.get('conversation_id', 'N/A')}")
+            print(f"Almacenando datos vectoriales para: {patient_data.get('conversation_id', 'N/A')}")
             
             # Generar ID único
             doc_id = self._generate_id(patient_data)
@@ -263,11 +286,11 @@ class VectorStoreService:
             # También almacenar en colección de pacientes (si es nuevo paciente)
             self.patient_service.store_patient_summary(patient_data, doc_id)
             
-            print(f"✅ Datos vectoriales almacenados con ID: {doc_id}")
+            print(f"Datos vectoriales almacenados con ID: {doc_id}")
             return doc_id
             
         except Exception as e:
-            print(f"❌ Error almacenando datos vectoriales: {e}")
+            print(f"Error almacenando datos vectoriales: {e}")
             raise
     
     # Métodos delegados a los servicios modulares
@@ -330,20 +353,20 @@ class VectorStoreService:
 def test_vector_store():
     """Función de prueba para verificar el almacenamiento vectorial"""
     try:
-        print("🚀 Probando almacenamiento vectorial con Chroma...")
+        print("Probando almacenamiento vectorial con Chroma...")
         
         # Crear instancia del servicio
         vector_service = VectorStoreService()
         
         # Obtener estadísticas
         stats = vector_service.get_collection_stats()
-        print(f"📊 Estadísticas del almacenamiento vectorial: {stats}")
+        print(f"Estadísticas del almacenamiento vectorial: {stats}")
         
-        print("✅ Prueba de almacenamiento vectorial completada")
+        print("Prueba de almacenamiento vectorial completada")
         return True
         
     except Exception as e:
-        print(f"❌ Error en la prueba de almacenamiento vectorial: {e}")
+        print(f"Error en la prueba de almacenamiento vectorial: {e}")
         return False
 
 if __name__ == "__main__":

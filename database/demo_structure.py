@@ -6,10 +6,10 @@ Muestra exactamente cómo se almacena la información
 def show_chroma_structure():
     """Muestra la estructura de datos que se almacena en Chroma"""
     
-    print("🗄️ ESTRUCTURA DE ALMACENAMIENTO EN CHROMA")
+    print(" ESTRUCTURA DE ALMACENAMIENTO EN CHROMA")
     print("=" * 60)
     
-    print("\n📊 1. INFORMACIÓN ESTRUCTURADA (Metadatos)")
+    print("\n 1. INFORMACIÓN ESTRUCTURADA (Metadatos)")
     print("-" * 50)
     structured_info = {
         # Información del paciente
@@ -38,9 +38,9 @@ def show_chroma_structure():
     }
     
     for key, value in structured_info.items():
-        print(f"  📋 {key}: {value}")
+        print(f"  {key}: {value}")
     
-    print("\n💬 2. INFORMACIÓN NO ESTRUCTURADA (Documento Vectorizado)")
+    print("\n 2. INFORMACIÓN NO ESTRUCTURADA (Documento Vectorizado)")
     print("-" * 50)
     unstructured_text = """
     INFORMACIÓN DEL PACIENTE:
@@ -73,41 +73,41 @@ def show_chroma_structure():
     
     print(unstructured_text)
     
-    print("\n🔍 3. CAPACIDADES DE BÚSQUEDA")
+    print("\n 3. CAPACIDADES DE BÚSQUEDA")
     print("-" * 50)
     search_capabilities = [
-        "🔎 Búsqueda por síntomas específicos",
-        "🔎 Búsqueda por nombre de paciente",
-        "🔎 Búsqueda por rango de edad",
-        "🔎 Búsqueda por prioridad médica",
-        "🔎 Búsqueda semántica (contexto natural)",
-        "🔎 Búsqueda por fecha de conversación",
-        "🔎 Búsqueda por promotor",
-        "🔎 Búsqueda por necesidad de seguimiento",
-        "🔎 Búsqueda por diagnóstico",
-        "🔎 Búsqueda vectorial similar"
+        " Búsqueda por síntomas específicos",
+        " Búsqueda por nombre de paciente",
+        " Búsqueda por rango de edad",
+        " Búsqueda por prioridad médica",
+        " Búsqueda semántica (contexto natural)",
+        " Búsqueda por fecha de conversación",
+        " Búsqueda por promotor",
+        " Búsqueda por necesidad de seguimiento",
+        " Búsqueda por diagnóstico",
+        " Búsqueda vectorial similar"
     ]
     
     for capability in search_capabilities:
         print(f"  {capability}")
     
-    print("\n💡 4. VENTAJAS DE ESTA ESTRUCTURA")
+    print("\n 4. VENTAJAS DE ESTA ESTRUCTURA")
     print("-" * 50)
     advantages = [
-        "✅ Información estructurada para filtros rápidos",
-        "✅ Información no estructurada para búsquedas semánticas",
-        "✅ Búsquedas vectoriales por similitud",
-        "✅ Contexto completo de la conversación",
-        "✅ Metadatos médicos organizados",
-        "✅ Escalable y eficiente",
-        "✅ Sin dependencias de bases de datos externas",
-        "✅ Búsquedas inteligentes basadas en IA"
+        "Información estructurada para filtros rápidos",
+        "Información no estructurada para búsquedas semánticas",
+        "Búsquedas vectoriales por similitud",
+        "Contexto completo de la conversación",
+        "Metadatos médicos organizados",
+        "Escalable y eficiente",
+        "Sin dependencias de bases de datos externas",
+        "Búsquedas inteligentes basadas en IA"
     ]
     
     for advantage in advantages:
         print(f"  {advantage}")
     
-    print("\n🎯 5. EJEMPLOS DE CONSULTAS POSIBLES")
+    print("\n 5. EJEMPLOS DE CONSULTAS POSIBLES")
     print("-" * 50)
     example_queries = [
         'Buscar pacientes con "fiebre y dolor de cabeza"',
@@ -120,7 +120,7 @@ def show_chroma_structure():
     ]
     
     for query in example_queries:
-        print(f"  🔍 {query}")
+        print(f"  {query}")
 
 if __name__ == "__main__":
     show_chroma_structure()

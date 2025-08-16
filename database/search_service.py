@@ -36,7 +36,7 @@ class SearchService:
             Lista de pacientes similares
         """
         try:
-            print(f"🔍 Buscando pacientes similares: '{query}'")
+            print(f"Buscando pacientes similares: '{query}'")
             
             # Buscar en colección de conversaciones
             results = self.conversations_collection.query(
@@ -55,11 +55,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontrados {len(formatted_results)} pacientes similares")
+            print(f"Encontrados {len(formatted_results)} pacientes similares")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error en búsqueda: {e}")
+            print(f"Error en búsqueda: {e}")
             return []
     
     def search_by_patient_name(self, patient_name: str, n_results: int = 5) -> List[Dict[str, Any]]:
@@ -74,7 +74,7 @@ class SearchService:
             Lista de conversaciones del paciente
         """
         try:
-            print(f"🔍 Buscando conversaciones de: {patient_name}")
+            print(f"Buscando conversaciones de: {patient_name}")
             
             # Buscar en colección de conversaciones por nombre
             results = self.conversations_collection.query(
@@ -95,11 +95,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontradas {len(formatted_results)} conversaciones de {patient_name}")
+            print(f"Encontradas {len(formatted_results)} conversaciones de {patient_name}")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error buscando por nombre: {e}")
+            print(f"Error buscando por nombre: {e}")
             return []
     
     def search_by_symptoms(self, symptoms: List[str], n_results: int = 5) -> List[Dict[str, Any]]:
@@ -115,7 +115,7 @@ class SearchService:
         """
         try:
             query_text = f"Síntomas: {', '.join(symptoms)}"
-            print(f"🔍 Buscando por síntomas: {symptoms}")
+            print(f"Buscando por síntomas: {symptoms}")
             
             results = self.conversations_collection.query(
                 query_texts=[query_text],
@@ -135,11 +135,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontrados {len(formatted_results)} pacientes con síntomas similares")
+            print(f"Encontrados {len(formatted_results)} pacientes con síntomas similares")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error buscando por síntomas: {e}")
+            print(f"Error buscando por síntomas: {e}")
             return []
     
     def search_by_diagnosis(self, diagnosis_keywords: List[str], n_results: int = 5) -> List[Dict[str, Any]]:
@@ -155,7 +155,7 @@ class SearchService:
         """
         try:
             query_text = f"Diagnóstico: {', '.join(diagnosis_keywords)}"
-            print(f"🔍 Buscando por diagnóstico: {diagnosis_keywords}")
+            print(f"Buscando por diagnóstico: {diagnosis_keywords}")
             
             results = self.conversations_collection.query(
                 query_texts=[query_text],
@@ -172,11 +172,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontrados {len(formatted_results)} pacientes con diagnósticos similares")
+            print(f"Encontrados {len(formatted_results)} pacientes con diagnósticos similares")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error buscando por diagnóstico: {e}")
+            print(f"Error buscando por diagnóstico: {e}")
             return []
     
     def search_by_date_range(self, start_date: str, end_date: str, n_results: int = 10) -> List[Dict[str, Any]]:
@@ -192,7 +192,7 @@ class SearchService:
             Lista de conversaciones en el rango de fechas
         """
         try:
-            print(f"🔍 Buscando conversaciones entre {start_date} y {end_date}")
+            print(f"Buscando conversaciones entre {start_date} y {end_date}")
             
             # Buscar conversaciones en el rango de fechas
             results = self.conversations_collection.query(
@@ -216,11 +216,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontradas {len(formatted_results)} conversaciones en el rango de fechas")
+            print(f"Encontradas {len(formatted_results)} conversaciones en el rango de fechas")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error buscando por rango de fechas: {e}")
+            print(f"Error buscando por rango de fechas: {e}")
             return []
     
     def search_by_priority_level(self, priority: str, n_results: int = 10) -> List[Dict[str, Any]]:
@@ -235,7 +235,7 @@ class SearchService:
             Lista de pacientes con la prioridad especificada
         """
         try:
-            print(f"🔍 Buscando pacientes con prioridad: {priority}")
+            print(f"Buscando pacientes con prioridad: {priority}")
             
             results = self.conversations_collection.query(
                 query_texts=[f"pacientes prioridad {priority}"],
@@ -255,11 +255,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontrados {len(formatted_results)} pacientes con prioridad {priority}")
+            print(f"Encontrados {len(formatted_results)} pacientes con prioridad {priority}")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error buscando por prioridad: {e}")
+            print(f"Error buscando por prioridad: {e}")
             return []
     
     def search_by_promoter(self, promoter_id: str, n_results: int = 10) -> List[Dict[str, Any]]:
@@ -274,7 +274,7 @@ class SearchService:
             Lista de conversaciones del promotor
         """
         try:
-            print(f"🔍 Buscando conversaciones del promotor: {promoter_id}")
+            print(f"Buscando conversaciones del promotor: {promoter_id}")
             
             results = self.conversations_collection.query(
                 query_texts=[f"conversaciones promotor {promoter_id}"],
@@ -294,11 +294,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontradas {len(formatted_results)} conversaciones del promotor {promoter_id}")
+            print(f"Encontradas {len(formatted_results)} conversaciones del promotor {promoter_id}")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error buscando por promotor: {e}")
+            print(f"Error buscando por promotor: {e}")
             return []
     
     def search_complex_query(self, query: str, filters: Dict[str, Any] = None, n_results: int = 5) -> List[Dict[str, Any]]:
@@ -314,7 +314,7 @@ class SearchService:
             Lista de resultados que coinciden con la consulta y filtros
         """
         try:
-            print(f"🔍 Búsqueda compleja: '{query}' con filtros: {filters}")
+            print(f"Búsqueda compleja: '{query}' con filtros: {filters}")
             
             # Construir filtros where
             where_filters = {}
@@ -348,11 +348,11 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontrados {len(formatted_results)} resultados para la búsqueda compleja")
+            print(f"Encontrados {len(formatted_results)} resultados para la búsqueda compleja")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error en búsqueda compleja: {e}")
+            print(f"Error en búsqueda compleja: {e}")
             return []
     
     def search_high_priority_patients(self, n_results: int = 10) -> List[Dict[str, Any]]:
@@ -366,7 +366,7 @@ class SearchService:
             Lista de pacientes con alta prioridad
         """
         try:
-            print("🚨 Buscando pacientes con alta prioridad...")
+            print("Buscando pacientes con alta prioridad...")
             
             results = self.conversations_collection.query(
                 query_texts=["paciente alta prioridad emergencia"],
@@ -386,9 +386,9 @@ class SearchService:
                 }
                 formatted_results.append(result)
             
-            print(f"✅ Encontrados {len(formatted_results)} pacientes con alta prioridad")
+            print(f"Encontrados {len(formatted_results)} pacientes con alta prioridad")
             return formatted_results
             
         except Exception as e:
-            print(f"❌ Error buscando pacientes de alta prioridad: {e}")
+            print(f"Error buscando pacientes de alta prioridad: {e}")
             return []

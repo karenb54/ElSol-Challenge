@@ -106,11 +106,11 @@ class PatientService:
                 "conversations": conversations
             }
             
-            print(f"✅ Resumen generado para {patient_name}")
+            print(f"Resumen generado para {patient_name}")
             return summary
             
         except Exception as e:
-            print(f"❌ Error generando resumen del paciente: {e}")
+            print(f"Error generando resumen del paciente: {e}")
             return {
                 "patient_name": patient_name,
                 "found": False,
@@ -129,7 +129,7 @@ class PatientService:
                 "vector_db_size_mb": self._get_db_size()
             }
         except Exception as e:
-            print(f"❌ Error obteniendo estadísticas: {e}")
+            print(f"Error obteniendo estadísticas: {e}")
             return {}
     
     def _get_db_size(self) -> float:
@@ -183,11 +183,11 @@ class PatientService:
             with open(file_path, 'w', encoding='utf-8') as f:
                 json.dump(export_data, f, indent=2, ensure_ascii=False)
             
-            print(f"✅ Colección exportada a: {file_path}")
+            print(f"Colección exportada a: {file_path}")
             return file_path
             
         except Exception as e:
-            print(f"❌ Error exportando colección: {e}")
+            print(f"Error exportando colección: {e}")
             raise
     
     def store_patient_summary(self, patient_data: Dict[str, Any], doc_id: str):
@@ -229,7 +229,7 @@ class PatientService:
                     documents=[summary_text],
                     metadatas=[patient_metadata]
                 )
-                print(f"✅ Paciente actualizado: {patient_name}")
+                print(f"Paciente actualizado: {patient_name}")
             else:
                 # Crear nuevo paciente
                 self.patients_collection.add(
@@ -237,10 +237,10 @@ class PatientService:
                     metadatas=[patient_metadata],
                     ids=[patient_id]
                 )
-                print(f"✅ Nuevo paciente creado: {patient_name}")
+                print(f"Nuevo paciente creado: {patient_name}")
                 
         except Exception as e:
-            print(f"❌ Error almacenando resumen del paciente: {e}")
+            print(f"Error almacenando resumen del paciente: {e}")
     
     def get_patient_conversation_history(self, patient_name: str, limit: int = 10) -> List[Dict[str, Any]]:
         """
@@ -267,7 +267,7 @@ class PatientService:
             return conversations
             
         except Exception as e:
-            print(f"❌ Error obteniendo historial de conversaciones: {e}")
+            print(f"Error obteniendo historial de conversaciones: {e}")
             return []
     
     def get_patients_by_priority(self, priority: str = "alta") -> List[Dict[str, Any]]:
@@ -286,5 +286,5 @@ class PatientService:
             return search_service.search_by_priority_level(priority, n_results=50)
             
         except Exception as e:
-            print(f"❌ Error obteniendo pacientes por prioridad: {e}")
+            print(f"Error obteniendo pacientes por prioridad: {e}")
             return []

@@ -8,24 +8,24 @@ import time
 
 def wait_for_api():
     """Espera a que la API esté disponible"""
-    print("⏳ Esperando a que la API esté disponible...")
+    print("Esperando a que la API esté disponible...")
     for i in range(30):
         try:
             response = requests.get("http://localhost:8000/", timeout=5)
             if response.status_code == 200:
-                print("✅ API disponible")
+                print("API disponible")
                 return True
         except:
             pass
         time.sleep(1)
-        print(f"⏳ Intento {i+1}/30...")
+        print(f"Intento {i+1}/30...")
     
-    print("❌ API no disponible después de 30 intentos")
+    print("API no disponible después de 30 intentos")
     return False
 
 def test_chat_question(question):
     """Prueba una pregunta específica en el chat"""
-    print(f"\n📝 Pregunta: {question}")
+    print(f"\nPregunta: {question}")
     
     try:
         response = requests.post(
@@ -36,17 +36,17 @@ def test_chat_question(question):
         
         if response.status_code == 200:
             result = response.json()
-            print(f"🤖 Respuesta: {result.get('response', 'Sin respuesta')}")
-            print(f"🔧 Modelo usado: {result.get('model_used', 'N/A')}")
-            print(f"📊 Contexto usado: {result.get('context_used', 0)} pacientes")
+            print(f"Respuesta: {result.get('response', 'Sin respuesta')}")
+            print(f"Modelo usado: {result.get('model_used', 'N/A')}")
+            print(f"Contexto usado: {result.get('context_used', 0)} pacientes")
         else:
-            print(f"❌ Error {response.status_code}: {response.text}")
+            print(f"Error {response.status_code}: {response.text}")
             
     except Exception as e:
-        print(f"❌ Error en la petición: {e}")
+        print(f"Error en la petición: {e}")
 
 def main():
-    print("🧪 Probando Chat con Gemini...")
+    print("Probando Chat con Gemini...")
     
     if not wait_for_api():
         return
@@ -67,7 +67,7 @@ def main():
         test_chat_question(question)
         time.sleep(1)  # Pausa entre preguntas
     
-    print("\n✅ Prueba de Chat con Gemini completada")
+    print("\nPrueba de Chat con Gemini completada")
 
 if __name__ == "__main__":
     main()

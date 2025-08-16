@@ -11,27 +11,54 @@ import requests
 import re
 
 class ChatService:
+    """
+    Servicio de chat médico que utiliza Google Gemini API REST.
+    
+    Este servicio proporciona funcionalidad de chatbot inteligente para consultas médicas,
+    permitiendo que el LLM decida automáticamente si una pregunta es médica o no,
+    y responda de manera contextual usando información vectorizada de pacientes.
+    
+    Attributes:
+        gemini_api_key (str): API key para Google Gemini
+        gemini_api_url (str): URL del endpoint de Gemini API REST
+    """
+    
     def __init__(self):
         # Cargar variables de entorno
         from dotenv import load_dotenv
         load_dotenv()
         
         # Configurar Gemini API REST
-        self.gemini_api_key = os.getenv("GEMINI_API_KEY", "AIzaSyDdK6FsPMbayQEGoffM6X1wl9L2pEKcHCc")
+        self.gemini_api_key = os.getenv("GEMINI_API_KEY")
         self.gemini_api_url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent"
         
-        print(f"🔍 API Key de Gemini: {'SÍ' if self.gemini_api_key else 'NO'}")
+        print(f"API Key de Gemini: {'SÍ' if self.gemini_api_key else 'NO'}")
         
         if self.gemini_api_key:
-            print("🔧 Configurando Google Gemini API REST...")
-            print("✅ Google Gemini API REST configurado correctamente")
+            print("Configurando Google Gemini API REST...")
+            print("Google Gemini API REST configurado correctamente")
         else:
-            print("❌ No se encontró GEMINI_API_KEY")
+            print("No se encontró GEMINI_API_KEY")
 
 
 
     def generate_response(self, question: str, context_data: List[Dict[str, Any]]) -> Dict[str, Any]:
-        """Genera respuesta usando Google Gemini API REST"""
+        """
+        Genera una respuesta contextual usando Google Gemini API REST.
+        
+        Args:
+            question (str): Pregunta del usuario
+            context_data (List[Dict[str, Any]]): Datos de contexto médico vectorizados
+            
+        Returns:
+            Dict[str, Any]: Respuesta estructurada con:
+                - success (bool): Indica si la generación fue exitosa
+                - response (str): Respuesta generada por el LLM
+                - context_used (int): Número de pacientes usados como contexto
+                - model_used (str): Modelo utilizado para la generación
+                - timestamp (str): Timestamp de la respuesta
+                - error (str, optional): Mensaje de error si ocurrió alguno
+        """
         try:
             # Crear prompt inteligente que le permita al LLM decidir
             prompt = self._create_smart_prompt(question, context_data)
@@ -51,7 +78,7 @@ class ChatService:
             }
             
         except Exception as e:
-            print(f"❌ Error generando respuesta: {e}")
+            print(f"Error generando respuesta: {e}")
             return {
                 "success": False,
                 "response": "Lo siento, hubo un error al procesar tu pregunta. Por favor, intenta de nuevo.",
@@ -62,7 +89,22 @@ class ChatService:
             }
 
     def _create_smart_prompt(self, question: str, context_data: List[Dict[str, Any]]) -> str:
-        """Crea un prompt inteligente que permite al LLM decidir cómo responder"""
+        """
+        Crea un prompt inteligente que permite al LLM decidir cómo responder.
+        
+        Este método construye un prompt específico que instruye al LLM para:
+        - Identificar si la pregunta es médica o no
+        - Usar información médica solo cuando sea relevante
+        - Responder de manera natural para preguntas no médicas
+        - Proporcionar respuestas específicas para consultas médicas
+        
+        Args:
+            question (str): Pregunta original del usuario
+            context_data (List[Dict[str, Any]]): Datos de contexto médico
+            
+        Returns:
+            str: Prompt estructurado para el LLM
+        """
         
         # Preparar contexto médico si existe
         medical_context = ""
@@ -182,19 +224,19 @@ RESPUESTA:"""
                 
                 return "No se pudo generar una respuesta."
             else:
-                print(f"❌ Error en Gemini API REST: {response.status_code}")
-                print(f"📄 Respuesta: {response.text}")
+                print(f"Error en Gemini API REST: {response.status_code}")
+                print(f"Respuesta: {response.text}")
                 return "Lo siento, hubo un error procesando tu pregunta."
                 
         except Exception as e:
-            print(f"❌ Error en Gemini API REST: {e}")
+            print(f"Error en Gemini API REST: {e}")
             return "Lo siento, hubo un error procesando tu pregunta."
 
 
 
 def test_chat_service():
     """Función de prueba para el servicio de chat"""
-    print("🧪 Probando ChatService...")
+    print("Probando ChatService...")
     
     chat_service = ChatService()
     
@@ -208,7 +250,7 @@ def test_chat_service():
     ]
     
     for question in test_questions:
-        print(f"\n📝 Pregunta: {question}")
+        print(f"\nPregunta: {question}")
         
         # Probar generación de respuesta
         mock_context = [{
@@ -221,10 +263,10 @@ def test_chat_service():
         }]
         
         response = chat_service.generate_response(question, mock_context)
-        print(f"🤖 Respuesta: {response['response'][:100]}...")
-        print(f"🔧 Modelo usado: {response.get('model_used', 'N/A')}")
+        print(f"Respuesta: {response['response'][:100]}...")
+        print(f"Modelo usado: {response.get('model_used', 'N/A')}")
     
-    print("\n✅ Prueba de ChatService completada")
+    print("\nPrueba de ChatService completada")
 
 if __name__ == "__main__":
     test_chat_service()

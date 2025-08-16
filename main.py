@@ -56,19 +56,19 @@ def initialize_services():
     """Initialize all services"""
     global transcription_service, vector_service, chat_service
     
-    print("🔧 Inicializando servicios...")
+    print("Inicializando servicios...")
     
     # Initialize transcription service
     transcription_service = TranscriptionService()
-    print("✅ Servicio de transcripción inicializado")
+    print("Servicio de transcripción inicializado")
     
     # Initialize vector store service
     vector_service = VectorStoreService()
-    print("✅ Servicio de almacenamiento vectorial inicializado")
+    print("Servicio de almacenamiento vectorial inicializado")
     
     # Initialize chat service
     chat_service = ChatService()
-    print("✅ Servicio de chat inicializado")
+    print("Servicio de chat inicializado")
 
 @app.on_event("startup")
 async def startup_event():
@@ -122,37 +122,37 @@ async def process_audio_direct(file: UploadFile = File(...)):
             content = await file.read()
             buffer.write(content)
         
-        print(f"💾 Archivo guardado en: {file_path}")
+        print(f"Archivo guardado en: {file_path}")
         
         # Process transcription using the file path
         try:
-            print(f"🎙️ Iniciando transcripción del archivo: {file_path}")
+            print(f"Iniciando transcripción del archivo: {file_path}")
             transcription_result = transcription_service.transcribe_audio(file_path)
             
-            print(f"✅ Transcripción completada:")
-            print(f"   📝 Texto transcrito: {transcription_result['text'][:200]}...")
-            print(f"   🌍 Idioma detectado: {transcription_result['language']}")
-            print(f"   ⏱️ Duración: {transcription_result['duration']:.2f} segundos")
+            print(f"Transcripción completada:")
+            print(f"   Texto transcrito: {transcription_result['text'][:200]}...")
+            print(f"   Idioma detectado: {transcription_result['language']}")
+            print(f"   Duración: {transcription_result['duration']:.2f} segundos")
             
             # Extract patient information from transcription
-            print("🔍 Extrayendo información del paciente...")
+            print("Extrayendo información del paciente...")
             patient_data = transcription_service.extract_patient_info(transcription_result['text'])
             
             # Log detailed patient information
-            print("📋 INFORMACIÓN EXTRAÍDA DEL PACIENTE:")
-            print(f"   👤 Nombre: {patient_data.get('patient_info', {}).get('name', 'No detectado')}")
-            print(f"   📊 Edad: {patient_data.get('patient_info', {}).get('age', 'No detectada')}")
-            print(f"   👥 Género: {patient_data.get('patient_info', {}).get('gender', 'No detectado')}")
-            print(f"   📞 Teléfono: {patient_data.get('patient_info', {}).get('contact_info', {}).get('phone', 'No detectado')}")
-            print(f"   🤒 Síntomas: {', '.join(patient_data.get('medical_info', {}).get('symptoms', [])) or 'No detectados'}")
-            print(f"   💊 Medicamentos: {', '.join(patient_data.get('medical_info', {}).get('medications', [])) or 'No detectados'}")
-            print(f"   🚨 Prioridad: {patient_data.get('conversation_details', {}).get('priority_level', 'Normal')}")
-            print(f"   🔄 Seguimiento necesario: {'Sí' if patient_data.get('conversation_details', {}).get('follow_up_needed', False) else 'No'}")
+            print("INFORMACIÓN EXTRAÍDA DEL PACIENTE:")
+            print(f"   Nombre: {patient_data.get('patient_info', {}).get('name', 'No detectado')}")
+            print(f"   Edad: {patient_data.get('patient_info', {}).get('age', 'No detectada')}")
+            print(f"   Género: {patient_data.get('patient_info', {}).get('gender', 'No detectado')}")
+            print(f"   Teléfono: {patient_data.get('patient_info', {}).get('contact_info', {}).get('phone', 'No detectado')}")
+            print(f"   Síntomas: {', '.join(patient_data.get('medical_info', {}).get('symptoms', [])) or 'No detectados'}")
+            print(f"   Medicamentos: {', '.join(patient_data.get('medical_info', {}).get('medications', [])) or 'No detectados'}")
+            print(f"   Prioridad: {patient_data.get('conversation_details', {}).get('priority_level', 'Normal')}")
+            print(f"   Seguimiento necesario: {'Sí' if patient_data.get('conversation_details', {}).get('follow_up_needed', False) else 'No'}")
             
             # Store in vector database
-            print("💾 Almacenando en base de datos vectorial...")
+            print("Almacenando en base de datos vectorial...")
             vector_id = vector_service.store_patient_data(patient_data)
-            print(f"✅ Almacenado exitosamente con ID: {vector_id}")
+            print(f"Almacenado exitosamente con ID: {vector_id}")
             
             # Extract patient name for message
             patient_name = patient_data.get('patient_info', {}).get('name', 'Paciente')
@@ -174,7 +174,7 @@ async def process_audio_direct(file: UploadFile = File(...)):
         )
         
     except Exception as e:
-        print(f"❌ Error en process-audio: {e}")
+        print(f"Error en process-audio: {e}")
         return ProcessAudioResponse(
             success=False,
             message="Error procesando el audio",
@@ -195,21 +195,21 @@ async def chat_endpoint(request: ChatRequest):
     - Si la pregunta NO es médica → responde de manera natural (hora, saludos, etc.)
     """
     try:
-        print(f"🤖 Chatbot recibió pregunta: {request.question}")
+        print(f"Chatbot recibió pregunta: {request.question}")
         
         # Buscar información relevante de manera simple
-        print("🔍 Buscando información relevante...")
+        print("Buscando información relevante...")
         context_data = vector_service.search_similar_patients(
             request.question, 
             n_results=5
         )
         
-        print(f"📊 Contexto obtenido: {len(context_data)} pacientes")
+        print(f"Contexto obtenido: {len(context_data)} pacientes")
         
         # Dejar que el LLM decida cómo responder
         response = chat_service.generate_response(request.question, context_data)
         
-        print(f"🤖 Respuesta generada usando modelo: {response.get('model_used', 'N/A')}")
+        print(f"Respuesta generada usando modelo: {response.get('model_used', 'N/A')}")
         
         return ChatResponse(
             success=response['success'],
@@ -221,7 +221,7 @@ async def chat_endpoint(request: ChatRequest):
         )
         
     except Exception as e:
-        print(f"❌ Error en endpoint chat: {e}")
+        print(f"Error en endpoint chat: {e}")
         return ChatResponse(
             success=False,
             response="Lo siento, hubo un error procesando tu pregunta. Por favor, intenta de nuevo.",
@@ -240,9 +240,9 @@ def main():
     args = parser.parse_args()
 
     if args.api:
-        print("🚀 Starting ElSol Challenge API Server")
-        print(f"🌐 Server will be available at: http://{args.host}:{args.port}")
-        print(f"📚 API Documentation: http://{args.host}:{args.port}/docs")
+        print("Starting ElSol Challenge API Server")
+        print(f"Server will be available at: http://{args.host}:{args.port}")
+        print(f"API Documentation: http://{args.host}:{args.port}/docs")
         
         uvicorn.run(
             "main:app",
@@ -253,7 +253,7 @@ def main():
         )
     else:
         # Console mode - process test files
-        print("🔧 Inicializando servicios para modo consola...")
+        print("Inicializando servicios para modo consola...")
         
         # Initialize services
         transcription_service = TranscriptionService()
@@ -267,34 +267,34 @@ def main():
         
         for test_file in test_files:
             if os.path.exists(test_file):
-                print(f"\n🎙️ Procesando archivo de prueba: {test_file}")
+                print(f"\nProcesando archivo de prueba: {test_file}")
                 
                 try:
                     # Transcribe
                     result = transcription_service.transcribe_audio_file(test_file)
                     
                     if result['success']:
-                        print("✅ Transcripción exitosa")
-                        print(f"📝 Texto: {result['transcription']['text'][:100]}...")
+                        print("Transcripción exitosa")
+                        print(f"Texto: {result['transcription']['text'][:100]}...")
                         
                         # Store in vector database
                         vector_id = vector_service.store_patient_data(result['patient_data'])
-                        print(f"💾 Almacenado en vector DB con ID: {vector_id}")
+                        print(f"Almacenado en vector DB con ID: {vector_id}")
                         
                         # Show patient info
                         patient_info = result['patient_data']['patient_info']
-                        print(f"👤 Paciente: {patient_info.get('name', 'No identificado')}")
-                        print(f"📊 Edad: {patient_info.get('age', 'No especificada')}")
+                        print(f"Paciente: {patient_info.get('name', 'No identificado')}")
+                        print(f"Edad: {patient_info.get('age', 'No especificada')}")
                         
                     else:
-                        print(f"❌ Error en transcripción: {result['error']}")
+                        print(f"Error en transcripción: {result['error']}")
                         
                 except Exception as e:
-                    print(f"❌ Error procesando {test_file}: {e}")
+                    print(f"Error procesando {test_file}: {e}")
             else:
-                print(f"⚠️ Archivo de prueba no encontrado: {test_file}")
+                print(f"Archivo de prueba no encontrado: {test_file}")
         
-        print("\n✅ Procesamiento de archivos de prueba completado")
+        print("\nProcesamiento de archivos de prueba completado")
 
 if __name__ == "__main__":
     main()

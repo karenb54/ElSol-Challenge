@@ -12,16 +12,28 @@ import re
 
 class TranscriptionService:
     """
-    Servicio de transcripción usando Whisper local
-    Completamente gratuito y funciona offline
+    Servicio de transcripción de audio usando OpenAI Whisper local.
+    
+    Este servicio proporciona funcionalidad completa para transcribir archivos de audio
+    y extraer información estructurada de conversaciones médicas. Utiliza el modelo
+    Whisper de OpenAI para transcripción y regex para extracción de datos.
+    
+    Attributes:
+        model_name (str): Nombre del modelo Whisper a utilizar
+        model: Instancia del modelo Whisper cargado
     """
     
     def __init__(self, model_name: str = "base"):
         """
-        Inicializa el servicio de transcripción
+        Inicializa el servicio de transcripción.
         
         Args:
-            model_name: Modelo a usar (tiny, base, small, medium, large)
+            model_name (str): Modelo Whisper a utilizar. Opciones:
+                - "tiny": Más rápido, menos preciso
+                - "base": Equilibrio entre velocidad y precisión (recomendado)
+                - "small": Más preciso, más lento
+                - "medium": Alta precisión
+                - "large": Máxima precisión, muy lento
         """
         self.model_name = model_name
         self.model = None
@@ -37,44 +49,53 @@ class TranscriptionService:
         current_path = os.environ.get('PATH', '')
         os.environ['PATH'] = ffmpeg_path + os.pathsep + current_path
         
-        print(f"🔧 Configurando FFmpeg: {ffmpeg_path}")
+        print(f"Configurando FFmpeg: {ffmpeg_path}")
         
         # Verificar que funciona
         try:
             result = subprocess.run(['ffmpeg', '-version'], capture_output=True, text=True)
             if result.returncode == 0:
-                print("✅ FFmpeg configurado correctamente")
+                print("FFmpeg configurado correctamente")
             else:
-                print("❌ Error al verificar FFmpeg")
+                print("Error al verificar FFmpeg")
         except Exception as e:
-            print(f"❌ Error configurando FFmpeg: {e}")
+            print(f"Error configurando FFmpeg: {e}")
     
     def _load_model(self):
         """Carga el modelo de Whisper"""
         try:
-            print(f"🔄 Cargando modelo Whisper: {self.model_name}")
-            print("⏳ Esto puede tomar unos minutos la primera vez...")
+            print(f"Cargando modelo Whisper: {self.model_name}")
+            print("Esto puede tomar unos minutos la primera vez...")
             
             self.model = whisper.load_model(self.model_name)
-            print("✅ Modelo cargado exitosamente")
+            print("Modelo cargado exitosamente")
             
         except Exception as e:
-            print(f"❌ Error al cargar el modelo: {e}")
+            print(f"Error al cargar el modelo: {e}")
             raise
     
     def transcribe_audio(self, audio_path: str, language: Optional[str] = None) -> Dict[str, Any]:
         """
-        Transcribe un archivo de audio a texto
+        Transcribe un archivo de audio a texto usando Whisper.
         
         Args:
-            audio_path: Ruta al archivo de audio
-            language: Idioma del audio (opcional)
+            audio_path (str): Ruta al archivo de audio (.wav, .mp3, .m4a, .flac)
+            language (Optional[str]): Idioma del audio. Si no se especifica, 
+                                    Whisper lo detecta automáticamente
             
         Returns:
-            Diccionario con la transcripción y metadatos
+            Dict[str, Any]: Diccionario con:
+                - text (str): Texto transcrito
+                - language (str): Idioma detectado
+                - duration (float): Duración del audio en segundos
+                - model_used (str): Modelo Whisper utilizado
+                
+        Raises:
+            FileNotFoundError: Si el archivo de audio no existe
+            Exception: Si hay error en la transcripción
         """
         try:
-            print(f"🎙️ Transcribiendo archivo: {audio_path}")
+            print(f"Transcribiendo archivo: {audio_path}")
             
             # Verificar que el archivo existe
             if not os.path.exists(audio_path):
@@ -84,8 +105,8 @@ class TranscriptionService:
             file_size = os.path.getsize(audio_path)
             file_stats = os.stat(audio_path)
             
-            print(f"📁 Tamaño del archivo: {file_size / 1024:.2f} KB")
-            print("🎯 Iniciando transcripción...")
+            print(f"Tamaño del archivo: {file_size / 1024:.2f} KB")
+            print("Iniciando transcripción...")
             
             # Opciones de transcripción
             options = {
@@ -117,13 +138,13 @@ class TranscriptionService:
                 "status": "success"
             }
             
-            print(f"✅ Transcripción completada")
-            print(f"📏 Longitud del texto: {len(transcription_data['text'])} caracteres")
+            print(f"Transcripción completada")
+            print(f"Longitud del texto: {len(transcription_data['text'])} caracteres")
             
             return transcription_data
             
         except Exception as e:
-            print(f"❌ Error en la transcripción: {e}")
+            print(f"Error en la transcripción: {e}")
             raise
     
     def extract_patient_info(self, transcription: str) -> Dict[str, Any]:
@@ -133,7 +154,7 @@ class TranscriptionService:
         if not transcription:
             return {}
         
-        print("🔍 Extrayendo información del paciente...")
+        print("Extrayendo información del paciente...")
         
         # Normalizar el texto
         text_lower = transcription.lower()
@@ -369,7 +390,7 @@ class TranscriptionService:
 def test_transcription():
     """Función de prueba para verificar que la transcripción funciona"""
     try:
-        print("🚀 Iniciando prueba de transcripción con Whisper local")
+        print("Iniciando prueba de transcripción con Whisper local")
         print("=" * 60)
         
         # Crear instancia del servicio
@@ -379,18 +400,18 @@ def test_transcription():
         audio_file = "pruebas/p_52015966_552.wav"
         
         if os.path.exists(audio_file):
-            print(f"✅ Archivo encontrado: {audio_file}")
+            print(f"Archivo encontrado: {audio_file}")
             
             # Realizar transcripción
             result = service.transcribe_audio(audio_file)
             
             print("\n" + "=" * 60)
-            print("📝 RESULTADO DE LA TRANSCRIPCIÓN")
+            print("RESULTADO DE LA TRANSCRIPCIÓN")
             print("=" * 60)
-            print(f"🔤 Idioma detectado: {result['language']}")
-            print(f"⏱️ Duración del audio: {result['duration']:.2f} segundos")
-            print(f"🤖 Modelo usado: {result['model_used']}")
-            print("\n📄 TEXTO TRANSCRITO:")
+            print(f"Idioma detectado: {result['language']}")
+            print(f"Duración del audio: {result['duration']:.2f} segundos")
+            print(f"Modelo usado: {result['model_used']}")
+            print("\nTEXTO TRANSCRITO:")
             print("-" * 40)
             print(result['text'])
             print("-" * 40)
@@ -398,43 +419,43 @@ def test_transcription():
             # Extraer información estructurada para MongoDB
             patient_data = service.extract_patient_info(result['text'])
             
-            print("\n📋 INFORMACIÓN DEL PACIENTE (MongoDB Ready):")
+            print("\nINFORMACIÓN DEL PACIENTE (MongoDB Ready):")
             print("=" * 60)
-            print(f"🆔 ID Conversación: {patient_data['conversation_id']}")
-            print(f"👤 Nombre: {patient_data['patient_info']['name'] or 'No detectado'}")
-            print(f"📅 Edad: {patient_data['patient_info']['age'] or 'No detectada'}")
-            print(f"👥 Género: {patient_data['patient_info']['gender'] or 'No detectado'}")
-            print(f"📞 Teléfono: {patient_data['patient_info']['contact_info']['phone'] or 'No detectado'}")
-            print(f"🤒 Síntomas: {', '.join(patient_data['medical_info']['symptoms']) or 'No detectados'}")
-            print(f"💊 Medicamentos: {', '.join(patient_data['medical_info']['medications']) or 'No detectados'}")
-            print(f"🚨 Prioridad: {patient_data['conversation_details']['priority_level']}")
-            print(f"🔄 Seguimiento: {'Sí' if patient_data['conversation_details']['follow_up_needed'] else 'No'}")
+            print(f"ID Conversación: {patient_data['conversation_id']}")
+            print(f"Nombre: {patient_data['patient_info']['name'] or 'No detectado'}")
+            print(f"Edad: {patient_data['patient_info']['age'] or 'No detectada'}")
+            print(f"Género: {patient_data['patient_info']['gender'] or 'No detectado'}")
+            print(f"Teléfono: {patient_data['patient_info']['contact_info']['phone'] or 'No detectado'}")
+            print(f"Síntomas: {', '.join(patient_data['medical_info']['symptoms']) or 'No detectados'}")
+            print(f"Medicamentos: {', '.join(patient_data['medical_info']['medications']) or 'No detectados'}")
+            print(f"Prioridad: {patient_data['conversation_details']['priority_level']}")
+            print(f"Seguimiento: {'Sí' if patient_data['conversation_details']['follow_up_needed'] else 'No'}")
             print("=" * 60)
             
             # Guardar el texto en una variable como solicitaste
             texto_transcrito = result['text']
-            print(f"\n💾 El texto transcrito se ha guardado en la variable 'texto_transcrito'")
-            print(f"📏 Longitud del texto: {len(texto_transcrito)} caracteres")
+            print(f"\nEl texto transcrito se ha guardado en la variable 'texto_transcrito'")
+            print(f"Longitud del texto: {len(texto_transcrito)} caracteres")
             
             return texto_transcrito, patient_data
         else:
-            print(f"❌ Archivo no encontrado: {audio_file}")
+            print(f"Archivo no encontrado: {audio_file}")
             return None, None
             
     except Exception as e:
-        print(f"❌ Error en la prueba: {e}")
+        print(f"Error en la prueba: {e}")
         return None, None
 
 if __name__ == "__main__":
     texto_transcrito, patient_data = test_transcription()
     
     if texto_transcrito:
-        print("\n🎉 ¡Transcripción completada exitosamente!")
-        print("💾 Variable 'texto_transcrito' disponible para uso")
-        print("🗄️ Datos del paciente listos para MongoDB")
+        print("\n¡Transcripción completada exitosamente!")
+        print("Variable 'texto_transcrito' disponible para uso")
+        print("Datos del paciente listos para MongoDB")
         
         # Mostrar estructura completa para MongoDB
-        print(f"\n📊 ESTRUCTURA COMPLETA PARA MONGODB:")
+        print(f"\nESTRUCTURA COMPLETA PARA MONGODB:")
         print("-" * 40)
         for key, value in patient_data.items():
             if isinstance(value, dict):
@@ -444,4 +465,4 @@ if __name__ == "__main__":
             else:
                 print(f"📄 {key}: {value}")
     else:
-        print("\n💥 La transcripción falló")
+        print("\nLa transcripción falló")

@@ -27,12 +27,12 @@ class ConversationProcessor:
         # Conectar al almacenamiento vectorial
         try:
             self.vector_service = VectorStoreService()
-            print("✅ Almacenamiento vectorial (Chroma) conectado correctamente")
+            print("Almacenamiento vectorial (Chroma) conectado correctamente")
         except Exception as e:
-            print(f"❌ No se pudo conectar al almacenamiento vectorial: {e}")
+            print(f"No se pudo conectar al almacenamiento vectorial: {e}")
             raise
         
-        print("✅ Servicios inicializados correctamente")
+        print("Servicios inicializados correctamente")
     
     def process_audio_file(self, audio_path: str, save_to_db: bool = True) -> Dict[str, Any]:
         """
@@ -46,11 +46,11 @@ class ConversationProcessor:
             Diccionario con toda la información procesada
         """
         try:
-            print("🚀 Iniciando procesamiento completo de conversación")
+            print("Iniciando procesamiento completo de conversación")
             print("=" * 60)
             
             # Paso 1: Transcribir audio
-            print("📝 Paso 1: Transcribiendo audio...")
+            print("Paso 1: Transcribiendo audio...")
             transcription_result = self.transcription_service.transcribe_audio(audio_path)
             
             if not transcription_result or not transcription_result.get('text'):
@@ -67,12 +67,12 @@ class ConversationProcessor:
             
             # Paso 3: Guardar en almacenamiento vectorial
             if save_to_db and self.vector_service:
-                print("💾 Paso 3: Guardando en almacenamiento vectorial (Chroma)...")
+                print("Paso 3: Guardando en almacenamiento vectorial (Chroma)...")
                 vector_id = self.vector_service.store_patient_data(patient_data)
                 patient_data['vector_id'] = vector_id
-                print(f"✅ Guardado en Chroma con ID: {vector_id}")
+                print(f"Guardado en Chroma con ID: {vector_id}")
             else:
-                print("⚠️ Paso 3: Omitiendo guardado en almacenamiento vectorial")
+                print("Paso 3: Omitiendo guardado en almacenamiento vectorial")
                 patient_data['vector_id'] = None
             
             # Crear resultado final
@@ -83,11 +83,11 @@ class ConversationProcessor:
                 "processing_timestamp": transcription_result['transcription_time']
             }
             
-            print("\n🎉 Procesamiento completado exitosamente!")
+            print("\nProcesamiento completado exitosamente!")
             return result
             
         except Exception as e:
-            print(f"❌ Error en el procesamiento: {e}")
+            print(f"Error en el procesamiento: {e}")
             return {
                 "success": False,
                 "error": str(e),
@@ -107,18 +107,18 @@ class ConversationProcessor:
         summary = f"""
 📋 RESUMEN DE CONVERSACIÓN
 ==========================
-🆔 ID: {patient_data.get('conversation_id', 'N/A')}
-👤 Paciente: {patient_info.get('name', 'No identificado')}
-📅 Edad: {patient_info.get('age', 'No especificada')} años
-👥 Género: {patient_info.get('gender', 'No especificado')}
-📞 Teléfono: {patient_info.get('contact_info', {}).get('phone', 'No proporcionado')}
+ID: {patient_data.get('conversation_id', 'N/A')}
+Paciente: {patient_info.get('name', 'No identificado')}
+Edad: {patient_info.get('age', 'No especificada')} años
+Género: {patient_info.get('gender', 'No especificado')}
+Teléfono: {patient_info.get('contact_info', {}).get('phone', 'No proporcionado')}
 
-🤒 Síntomas detectados: {', '.join(medical_info.get('symptoms', [])) or 'Ninguno'}
-💊 Medicamentos: {', '.join(medical_info.get('medications', [])) or 'Ninguno'}
-🚨 Prioridad: {conversation_details.get('priority_level', 'Normal')}
-🔄 Seguimiento: {'Sí' if conversation_details.get('follow_up_needed') else 'No'}
+Síntomas detectados: {', '.join(medical_info.get('symptoms', [])) or 'Ninguno'}
+Medicamentos: {', '.join(medical_info.get('medications', [])) or 'Ninguno'}
+Prioridad: {conversation_details.get('priority_level', 'Normal')}
+Seguimiento: {'Sí' if conversation_details.get('follow_up_needed') else 'No'}
 
-📝 Transcripción: {patient_data.get('transcription', {}).get('full_text', 'No disponible')[:100]}...
+Transcripción: {patient_data.get('transcription', {}).get('full_text', 'No disponible')[:100]}...
         """
         
         return summary
@@ -157,7 +157,7 @@ def process_single_conversation(audio_file: str, promoter_id: str = "promoter_00
             
             return result
         else:
-            print(f"❌ Error en el procesamiento: {result.get('error', 'Error desconocido')}")
+            print(f"Error en el procesamiento: {result.get('error', 'Error desconocido')}")
             return None
             
     finally:
@@ -165,31 +165,31 @@ def process_single_conversation(audio_file: str, promoter_id: str = "promoter_00
 
 def main():
     """Función principal para procesar el archivo de ejemplo"""
-    print("🎯 PROCESADOR DE CONVERSACIONES - ElSol Challenge")
+    print("PROCESADOR DE CONVERSACIONES - ElSol Challenge")
     print("=" * 60)
     
     # Archivo de audio de ejemplo
     audio_file = "pruebas/p_51994013_222.mp3"
     
     if not os.path.exists(audio_file):
-        print(f"❌ Archivo no encontrado: {audio_file}")
+        print(f"Archivo no encontrado: {audio_file}")
         return
     
     # Procesar la conversación
     result = process_single_conversation(audio_file, "promoter_001")
     
     if result and result['success']:
-        print("\n✅ Procesamiento completado exitosamente!")
-        print("💾 Los datos están almacenados en Chroma y listos para el chatbot")
+        print("\nProcesamiento completado exitosamente!")
+        print("Los datos están almacenados en Chroma y listos para el chatbot")
         
         # Guardar el texto transcrito en una variable como solicitaste
         texto_transcrito = result['transcription']['text']
-        print(f"\n📄 Variable 'texto_transcrito' disponible:")
+        print(f"\nVariable 'texto_transcrito' disponible:")
         print(f"   Contenido: {texto_transcrito}")
         print(f"   Longitud: {len(texto_transcrito)} caracteres")
         
     else:
-        print("\n💥 El procesamiento falló")
+        print("\nEl procesamiento falló")
 
 if __name__ == "__main__":
     main()

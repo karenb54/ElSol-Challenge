@@ -3,9 +3,12 @@ Test para ChromaDB - Base de datos vectorial
 Usa directorio temporal para no afectar datos reales
 """
 
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+
 import pytest
 import tempfile
-import os
 import shutil
 from unittest.mock import Mock, patch
 from database.vector_store_service import VectorStoreService
@@ -33,7 +36,7 @@ class TestChromaDB:
         assert vector_service.client is not None
         assert vector_service.patients_collection is not None
         assert vector_service.conversations_collection is not None
-        print("✅ Servicio de ChromaDB inicializado correctamente")
+        print("Servicio de ChromaDB inicializado correctamente")
     
     def test_collections_created(self, vector_service):
         """Test de creación de colecciones"""
@@ -44,7 +47,7 @@ class TestChromaDB:
         assert "patients" in collection_names
         assert "conversations" in collection_names
         assert "symptoms" in collection_names
-        print("✅ Colecciones creadas correctamente")
+        print("Colecciones creadas correctamente")
     
     def test_store_patient_data(self, vector_service):
         """Test de almacenamiento de datos de paciente"""
@@ -84,7 +87,7 @@ class TestChromaDB:
         count = vector_service.conversations_collection.count()
         assert count > 0
         
-        print("✅ Almacenamiento de datos funcionando")
+        print("Almacenamiento de datos funcionando")
     
     def test_search_similar_patients(self, vector_service):
         """Test de búsqueda de pacientes similares"""
@@ -123,7 +126,7 @@ class TestChromaDB:
         assert results is not None
         assert len(results) > 0
         
-        print("✅ Búsqueda de pacientes similares funcionando")
+        print("Búsqueda de pacientes similares funcionando")
     
     def test_search_by_patient_name(self, vector_service):
         """Test de búsqueda por nombre de paciente"""
@@ -165,7 +168,7 @@ class TestChromaDB:
         found_patient = results[0]
         assert "Juan Test" in found_patient['metadata']['patient_name']
         
-        print("✅ Búsqueda por nombre funcionando")
+        print("Búsqueda por nombre funcionando")
     
     def test_search_by_symptoms(self, vector_service):
         """Test de búsqueda por síntomas"""
@@ -204,7 +207,7 @@ class TestChromaDB:
         assert results is not None
         assert len(results) > 0
         
-        print("✅ Búsqueda por síntomas funcionando")
+        print("Búsqueda por síntomas funcionando")
     
     def test_get_collection_stats(self, vector_service):
         """Test de estadísticas de colección"""
@@ -244,12 +247,12 @@ class TestChromaDB:
         assert "total_conversations" in stats
         assert "vector_db_size_mb" in stats
         
-        print("✅ Estadísticas de colección funcionando")
+        print("Estadísticas de colección funcionando")
 
 
 def run_chroma_tests():
     """Función para ejecutar todos los tests de ChromaDB"""
-    print("🧪 Ejecutando tests de ChromaDB...")
+    print("Ejecutando tests de ChromaDB...")
     
     # Crear directorio temporal
     temp_dir = tempfile.mkdtemp(prefix="test_chroma_")
@@ -262,7 +265,7 @@ def run_chroma_tests():
         print("\n1. Test de inicialización:")
         assert service is not None
         assert service.client is not None
-        print("✅ Servicio inicializado")
+        print("Servicio inicializado")
         
         # Test 2: Creación de colecciones
         print("\n2. Test de colecciones:")
@@ -270,7 +273,7 @@ def run_chroma_tests():
         collection_names = [col.name for col in collections]
         assert "patients" in collection_names
         assert "conversations" in collection_names
-        print("✅ Colecciones creadas")
+        print("Colecciones creadas")
         
         # Test 3: Almacenamiento de datos
         print("\n3. Test de almacenamiento:")
@@ -301,23 +304,23 @@ def run_chroma_tests():
         
         doc_id = service.store_patient_data(test_data)
         assert doc_id is not None
-        print("✅ Almacenamiento funcionando")
+        print("Almacenamiento funcionando")
         
         # Test 4: Búsqueda
         print("\n4. Test de búsqueda:")
         results = service.search_similar_patients("fiebre", n_results=5)
         assert results is not None
         assert len(results) > 0
-        print("✅ Búsqueda funcionando")
+        print("Búsqueda funcionando")
         
         # Test 5: Estadísticas
         print("\n5. Test de estadísticas:")
         stats = service.get_collection_stats()
         assert stats is not None
         assert stats["total_conversations"] > 0
-        print("✅ Estadísticas funcionando")
+        print("Estadísticas funcionando")
         
-        print("\n🎉 Todos los tests de ChromaDB pasaron exitosamente!")
+        print("\nTodos los tests de ChromaDB pasaron exitosamente!")
         
     finally:
         # Limpiar directorio temporal
