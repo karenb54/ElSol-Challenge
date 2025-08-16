@@ -9,7 +9,7 @@
 
 Sistema de transcripción y análisis de conversaciones médicas que combina OpenAI Whisper, ChromaDB y Google Gemini para procesar grabaciones médicas y proporcionar un chatbot inteligente para consultas sobre pacientes.
 
-**Tecnologías:** Python 3.10, FastAPI, OpenAI Whisper, ChromaDB, Google Gemini
+**Tecnologías:** Python 3.10, FastAPI, OpenAI Whisper, ChromaDB, Google Gemini, Telegram Bot API
 
 ---
 
@@ -30,13 +30,14 @@ Sistema de transcripción y análisis de conversaciones médicas que combina Ope
 |---------------|--------|---------------|
 | **Buenas Prácticas MLOps** | Completado | Tests unitarios, versionado, documentación |
 | **Arquitectura Modular** | Completado | Servicios separados, escalable, mantenible |
+| **Bot de Telegram** | Completado | Interfaz nativa sin desarrollo web, escalable para multimedia |
 
 ### Funcionalidades PLUS No Implementadas
 
 | Funcionalidad | Estado | Razón |
 |---------------|--------|-------|
 | **Transcripción en Tiempo Real** | Pendiente | Complejidad alta, requiere streaming |
-| **Cliente Frontend (React)** | Pendiente | Fuera del scope backend |
+| **Cliente Frontend (React)** | Pendiente | Implementado como Bot de Telegram en su lugar |
 | **OCR de PDFs/Imágenes** | Pendiente | Integración compleja, tiempo limitado |
 | **Diferenciación de Hablantes** | Pendiente | Requiere modelos adicionales |
 | **Seguridad Avanzada** | Pendiente | Autenticación/autorización compleja |
@@ -49,8 +50,9 @@ Sistema de transcripción y análisis de conversaciones médicas que combina Ope
 
 ```mermaid
 graph TB
-    subgraph "Cliente"
-        USER[Usuario/API Client]
+    subgraph "Interfaces"
+        USER[Usuario API Client]
+        BOT[Telegram Bot<br/>@ElSolMedicalApi_bot]
     end
     
     subgraph "API Layer"
@@ -63,6 +65,7 @@ graph TB
         TS[TranscriptionService]
         CS[ChatService]
         VS[VectorStoreService]
+        TB[TelegramBotService]
     end
     
     subgraph "AI Models"
@@ -74,15 +77,22 @@ graph TB
         CHROMA[(ChromaDB<br/>Vector Store)]
     end
     
-    %% Flujo de Audio
+    %% Flujo Bot de Telegram
+    BOT -->|Audio/Text| TB
+    TB -->|Audio File| UPLOAD
+    TB -->|Question| CHAT
+    
+    %% Flujo API Direct
     USER -->|Audio File| UPLOAD
+    USER -->|Question| CHAT
+    
+    %% Flujo de Audio
     UPLOAD --> TS
     TS --> WHISPER
     TS --> VS
     VS --> CHROMA
     
     %% Flujo de Chat
-    USER -->|Question| CHAT
     CHAT --> CS
     CS --> GEMINI
     CS --> VS
@@ -93,21 +103,24 @@ graph TB
     API --> CHAT
     
     %% Estilos
+    classDef interfaceStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
     classDef apiStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
     classDef serviceStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef aiStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
-    classDef dbStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    classDef aiStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
+    classDef dbStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
     
+    class USER,BOT interfaceStyle
     class API,UPLOAD,CHAT apiStyle
-    class TS,CS,VS serviceStyle
+    class TS,CS,VS,TB serviceStyle
     class WHISPER,GEMINI aiStyle
     class CHROMA dbStyle
 ```
 
-**Servicios :**
+**Servicios:**
 - `TranscriptionService`: Procesamiento de audio con Whisper
 - `ChatService`: Respuestas inteligentes con Gemini
 - `VectorStoreService`: Almacenamiento en ChromaDB
+- `TelegramBotService`: Interfaz de usuario conversacional
 - `SearchService`: Búsquedas semánticas
 - `PatientService`: Operaciones de pacientes
 
@@ -169,6 +182,52 @@ graph TB
 - Diferenciación de hablantes
 - Infraestructura cloud (AWS/Azure)
 - Cumplimiento HIPAA/GDPR
+
+---
+
+## Justificación Técnica: Bot de Telegram
+
+### Decisión de Implementación
+
+**¿Por qué Bot de Telegram en lugar de Frontend Web?**
+
+| Aspecto | Bot de Telegram | Frontend Web | Ventaja |
+|---------|----------------|--------------|---------|
+| **Desarrollo** | 1 día | 3-5 días |  Rapidez |
+| **Interfaz Móvil** | Nativa | Responsive necesario |  UX Superior |
+| **Escalabilidad Multimedia** | Audio, imágenes, docs nativos | Upload complejo |  Futuro-preparado |
+| **Interacción** | Chat conversacional natural | Formularios/botones |  Más Natural |
+| **Mantenimiento** | Auto-actualizable | Deploy requerido |  Menos Overhead |
+| **Adopción Usuario** | App existente | Nueva URL |  Cero Fricción |
+
+### Beneficios Técnicos
+
+**Escalabilidad para Multimedia:**
+- **Actual**: Audio (.mp3, .wav, .m4a, .ogg) con conversión automática
+- **Futuro**: Imágenes médicas (rayos X, resonancias) con un simple handler adicional
+- **Potencial**: Documentos PDF de historiales clínicos para OCR
+
+**Arquitectura Robusta:**
+```python
+# Extensión futura simple:
+async def handle_image(update, context):
+    # Procesar imagen médica
+    
+async def handle_document(update, context):
+    # OCR de documentos
+```
+
+**Interacción Natural:**
+- Mensajes contextuales inteligentes según tipo de consulta
+- Conversaciones fluidas sin limitaciones de UI
+- Notificaciones push automáticas
+
+### ROI de la Decisión
+
+- **Tiempo ahorrado**: 3-4 días de desarrollo frontend
+- **Costo infraestructura**: $0 (sin hosting de frontend)
+- **Experiencia usuario**: Superior en móviles (>80% del uso)
+- **Escalabilidad**: Preparado para multimedia sin refactoring
 
 ---
 

@@ -6,8 +6,11 @@ Main entry point for the application
 import os
 import sys
 import argparse
+import asyncio
+import threading
+import time
 from typing import Dict, Any, List, Optional
-from fastapi import FastAPI, File, UploadFile, HTTPException
+from fastapi import FastAPI, File, UploadFile, HTTPException, Form
 from pydantic import BaseModel
 import uvicorn
 from datetime import datetime
@@ -88,21 +91,21 @@ async def root():
     }
 
 @app.post("/process-audio", response_model=ProcessAudioResponse)
-async def process_audio_direct(file: UploadFile = File(...)):
+async def process_audio_direct(file: UploadFile = File(...), patient_name: Optional[str] = Form(None)):
     """
     Procesa archivo de audio directamente:
     1. Guarda el archivo en la carpeta pruebas/
     2. Procesa la transcripción
-    3. Extrae información del paciente
+    3. Extrae información del paciente (usar patient_name si se proporciona)
     4. Almacena en ChromaDB
     5. Retorna confirmación de guardado exitoso
     """
     try:
         # Validate file type
-        if not file.filename.lower().endswith(('.wav', '.mp3', '.m4a', '.flac')):
+        if not file.filename.lower().endswith(('.wav', '.mp3', '.m4a', '.flac', '.ogg')):
             return ProcessAudioResponse(
                 success=False,
-                message="Error: Solo se permiten archivos de audio (.wav, .mp3, .m4a, .flac)",
+                message="Error: Solo se permiten archivos de audio (.wav, .mp3, .m4a, .flac, .ogg)",
                 file_saved="",
                 error="Tipo de archivo no soportado"
             )
@@ -138,9 +141,15 @@ async def process_audio_direct(file: UploadFile = File(...)):
             print("Extrayendo información del paciente...")
             patient_data = transcription_service.extract_patient_info(transcription_result['text'])
             
+            # Override patient name if provided from bot
+            if patient_name:
+                patient_data['patient_info']['name'] = patient_name.strip()
+                print(f"Nombre del paciente override desde bot: {patient_name}")
+            
             # Log detailed patient information
+            final_patient_name = patient_data.get('patient_info', {}).get('name', 'No detectado')
             print("INFORMACIÓN EXTRAÍDA DEL PACIENTE:")
-            print(f"   Nombre: {patient_data.get('patient_info', {}).get('name', 'No detectado')}")
+            print(f"   Nombre: {final_patient_name}")
             print(f"   Edad: {patient_data.get('patient_info', {}).get('age', 'No detectada')}")
             print(f"   Género: {patient_data.get('patient_info', {}).get('gender', 'No detectado')}")
             print(f"   Teléfono: {patient_data.get('patient_info', {}).get('contact_info', {}).get('phone', 'No detectado')}")
@@ -154,8 +163,8 @@ async def process_audio_direct(file: UploadFile = File(...)):
             vector_id = vector_service.store_patient_data(patient_data)
             print(f"Almacenado exitosamente con ID: {vector_id}")
             
-            # Extract patient name for message
-            patient_name = patient_data.get('patient_info', {}).get('name', 'Paciente')
+            # Extract patient name for response message
+            response_patient_name = patient_data.get('patient_info', {}).get('name', 'Paciente')
             
         except Exception as e:
             return ProcessAudioResponse(
@@ -167,9 +176,9 @@ async def process_audio_direct(file: UploadFile = File(...)):
         
         return ProcessAudioResponse(
             success=True,
-            message=f"Audio de la paciente {patient_name} guardado exitosamente",
+            message=f"Audio de la paciente {response_patient_name} guardado exitosamente",
             file_saved=new_filename,
-            patient_name=patient_name,
+            patient_name=response_patient_name,
             vector_id=vector_id
         )
         
@@ -296,5 +305,79 @@ def main():
         
         print("\nProcesamiento de archivos de prueba completado")
 
+def start_telegram_bot_delayed():
+    """Inicia el bot de Telegram con delay para esperar que la API se levante"""
+    def run_bot():
+        print("⏰ Esperando 10 segundos para que la API se inicialice...")
+        time.sleep(10)
+        
+        try:
+            print("🤖 Iniciando Bot de Telegram...")
+            from services.telegram_bot import main as bot_main
+            bot_main()
+        except ImportError:
+            print("❌ Error: No se pudo importar services/telegram_bot.py")
+            print("   Asegúrate de que telegram_bot.py esté en la carpeta services/")
+        except Exception as e:
+            print(f"❌ Error ejecutando bot: {e}")
+    
+    # Ejecutar el bot en un hilo separado
+    bot_thread = threading.Thread(target=run_bot, daemon=True)
+    bot_thread.start()
+    return bot_thread
+
+def run_api_with_bot():
+    """Ejecuta la API y el bot de Telegram juntos"""
+    print("🚀 Iniciando ElSol Challenge - API + Bot de Telegram")
+    print("=" * 60)
+    
+    # Inicializar servicios
+    try:
+        initialize_services()
+        print("✅ Servicios inicializados correctamente")
+    except Exception as e:
+        print(f"❌ Error inicializando servicios: {e}")
+        return
+    
+    # Iniciar bot en hilo separado
+    bot_thread = start_telegram_bot_delayed()
+    
+    print("🌐 Iniciando servidor FastAPI...")
+    print("📱 El bot de Telegram se iniciará en 10 segundos...")
+    print("\n🔗 URLs disponibles:")
+    print("   API: http://localhost:8000")
+    print("   Docs: http://localhost:8000/docs")
+    print("   Bot: @ElSolMedicalApi_bot")
+    print("\n⚠️  Para detener ambos servicios: Ctrl+C")
+    print("=" * 60)
+    
+    try:
+        # Ejecutar FastAPI
+        uvicorn.run(
+            app, 
+            host="0.0.0.0", 
+            port=8000,
+            log_level="info"
+        )
+    except KeyboardInterrupt:
+        print("\n👋 Deteniendo servicios...")
+    except Exception as e:
+        print(f"❌ Error en servidor: {e}")
+
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser(description="ElSol Challenge - Sistema de Conversaciones Médicas")
+    parser.add_argument("--api", action="store_true", help="Ejecutar solo la API")
+    parser.add_argument("--bot", action="store_true", help="Ejecutar API + Bot de Telegram")
+    parser.add_argument("--full", action="store_true", help="Ejecutar API + Bot (igual que --bot)")
+    
+    args = parser.parse_args()
+    
+    if args.api:
+        # Solo API (comportamiento original)
+        main()
+    elif args.bot or args.full:
+        # API + Bot de Telegram
+        run_api_with_bot()
+    else:
+        # Por defecto: API + Bot
+        run_api_with_bot()
