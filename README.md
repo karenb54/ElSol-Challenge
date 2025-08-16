@@ -227,23 +227,37 @@ graph TB
 
 #### Interfaz del Bot
 - Captura del comando `/start` y mensaje de bienvenida
-- Captura del comando `/help` con lista de comandos disponibles
-- Captura del comando `/stats` mostrando estadísticas del sistema
+- <img width="468" height="478" alt="comand start" src="https://github.com/user-attachments/assets/aee60a2f-ac1d-4241-aecf-ef10fe4f05ec" />
+
+
 
 #### Procesamiento de Audio
 - Captura del envío de archivo de audio (.mp3, .wav, .ogg)
 - Captura del procesamiento con mensaje de confirmación
 - Captura del resultado con nombre del paciente extraído
+- 
+- <img width="492" height="395" alt="Procesamiento_de_audios" src="https://github.com/user-attachments/assets/451ba189-f1bb-46c3-ba06-b76d85e3f445" />
+
+
 
 #### Chat Inteligente
 - Captura de consulta médica: "¿Cuántos pacientes tenemos?"
 - Captura de búsqueda específica: "¿Qué síntomas tiene María?"
 - Captura de respuesta contextual del asistente médico
+- 
+- <img width="507" height="511" alt="bot_pregunta_paciente" src="https://github.com/user-attachments/assets/e67b83aa-3b25-4c73-bfcd-6d2dc990a5ef" />
+
+- <img width="546" height="600" alt="plan_medico" src="https://github.com/user-attachments/assets/75f671c9-246c-45a9-876b-515997047f53" />
+
+- <img width="500" height="204" alt="listado_de_pacientes" src="https://github.com/user-attachments/assets/a7fed795-17b0-4104-b5cf-c8d050f0e8b8" />
+
 
 #### Conversión de Formatos
 - Captura del envío de nota de voz (.ogg)
 - Captura del proceso de conversión automática
 - Captura del resultado final procesado
+
+- <img width="504" height="317" alt="notas_de_voz" src="https://github.com/user-attachments/assets/4f4c7684-1da8-4865-baa8-ed1c766e2b10" />
 
 ### Demostración de la API
 
