@@ -5,7 +5,7 @@
 
 ---
 
-## 📋 Resumen Ejecutivo
+## Resumen Ejecutivo
 
 Sistema de transcripción y análisis de conversaciones médicas que combina OpenAI Whisper, ChromaDB y Google Gemini para procesar grabaciones médicas y proporcionar un chatbot inteligente para consultas sobre pacientes.
 
@@ -13,44 +13,95 @@ Sistema de transcripción y análisis de conversaciones médicas que combina Ope
 
 ---
 
-## 🎯 Análisis del Requerimiento
+## Análisis del Requerimiento
 
-### ✅ Funcionalidades Entregadas (MVP)
+### Funcionalidades Entregadas (MVP)
 
 | Funcionalidad | Estado | Descripción |
 |---------------|--------|-------------|
-| **Transcripción de Audio** | ✅ Completado | Whisper local, múltiples formatos, extracción de info médica |
-| **Almacenamiento Vectorial** | ✅ Completado | ChromaDB con embeddings semánticos y metadatos |
-| **Chatbot Médico** | ✅ Completado | Google Gemini con búsqueda semántica contextual |
-| **API REST** | ✅ Completado | FastAPI con 2 endpoints principales + documentación |
+| **Transcripción de Audio** | Completado | Whisper local, múltiples formatos, extracción de info médica |
+| **Almacenamiento Vectorial** | Completado | ChromaDB con embeddings semánticos y metadatos |
+| **Chatbot Médico** | Completado | Google Gemini con búsqueda semántica contextual |
+| **API REST** | Completado | FastAPI con 2 endpoints principales + documentación |
 
-### 🟡 Funcionalidades PLUS Implementadas
+### Funcionalidades PLUS Implementadas
 
 | Funcionalidad | Estado | Justificación |
 |---------------|--------|---------------|
-| **Buenas Prácticas MLOps** | ✅ Completado | Tests unitarios, versionado, documentación |
-| **Arquitectura Modular** | ✅ Completado | Servicios separados, escalable, mantenible |
+| **Buenas Prácticas MLOps** | Completado | Tests unitarios, versionado, documentación |
+| **Arquitectura Modular** | Completado | Servicios separados, escalable, mantenible |
 
-### ❌ Funcionalidades PLUS No Implementadas
+### Funcionalidades PLUS No Implementadas
 
 | Funcionalidad | Estado | Razón |
 |---------------|--------|-------|
-| **Transcripción en Tiempo Real** | ❌ Pendiente | Complejidad alta, requiere streaming |
-| **Cliente Frontend (React)** | ❌ Pendiente | Fuera del scope backend |
-| **OCR de PDFs/Imágenes** | ❌ Pendiente | Integración compleja, tiempo limitado |
-| **Diferenciación de Hablantes** | ❌ Pendiente | Requiere modelos adicionales |
-| **Seguridad Avanzada** | ❌ Pendiente | Autenticación/autorización compleja |
+| **Transcripción en Tiempo Real** | Pendiente | Complejidad alta, requiere streaming |
+| **Cliente Frontend (React)** | Pendiente | Fuera del scope backend |
+| **OCR de PDFs/Imágenes** | Pendiente | Integración compleja, tiempo limitado |
+| **Diferenciación de Hablantes** | Pendiente | Requiere modelos adicionales |
+| **Seguridad Avanzada** | Pendiente | Autenticación/autorización compleja |
 
 ---
 
-## 🏗️ Arquitectura Implementada
+## Arquitectura Implementada
 
 ### Componentes Principales
 
-```
-Cliente → FastAPI → [TranscriptionService | ChatService] → ChromaDB
-                           ↓                    ↓
-                     Whisper Model        Gemini API
+```mermaid
+graph TB
+    subgraph "Cliente"
+        USER[Usuario/API Client]
+    end
+    
+    subgraph "API Layer"
+        API[FastAPI Server]
+        UPLOAD[/process-audio]
+        CHAT[/chat]
+    end
+    
+    subgraph "Services"
+        TS[TranscriptionService]
+        CS[ChatService]
+        VS[VectorStoreService]
+    end
+    
+    subgraph "AI Models"
+        WHISPER[Whisper Model<br/>Local]
+        GEMINI[Google Gemini<br/>API REST]
+    end
+    
+    subgraph "Database"
+        CHROMA[(ChromaDB<br/>Vector Store)]
+    end
+    
+    %% Flujo de Audio
+    USER -->|Audio File| UPLOAD
+    UPLOAD --> TS
+    TS --> WHISPER
+    TS --> VS
+    VS --> CHROMA
+    
+    %% Flujo de Chat
+    USER -->|Question| CHAT
+    CHAT --> CS
+    CS --> GEMINI
+    CS --> VS
+    VS --> CHROMA
+    
+    %% Conexiones API
+    API --> UPLOAD
+    API --> CHAT
+    
+    %% Estilos
+    classDef apiStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
+    classDef serviceStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
+    classDef aiStyle fill:#e8f5e8,stroke:#1b5e20,stroke-width:2px
+    classDef dbStyle fill:#fff3e0,stroke:#e65100,stroke-width:2px
+    
+    class API,UPLOAD,CHAT apiStyle
+    class TS,CS,VS serviceStyle
+    class WHISPER,GEMINI aiStyle
+    class CHROMA dbStyle
 ```
 
 **Servicios :**
@@ -64,16 +115,16 @@ Cliente → FastAPI → [TranscriptionService | ChatService] → ChromaDB
 
 | Tecnología | Alternativa | Decisión | Justificación |
 |------------|-------------|----------|---------------|
-| **Whisper Local** | Azure Speech | ✅ Whisper | Privacidad médica, sin costos |
-| **ChromaDB** | Pinecone | ✅ ChromaDB | Local, sin dependencias cloud |
-| **Google Gemini** | OpenAI GPT | ✅ Gemini | API gratuita, buen español |
-| **FastAPI** | Flask | ✅ FastAPI | Validación auto, docs auto |
+| **Whisper Local** | Azure Speech | Whisper | Privacidad médica, sin costos |
+| **ChromaDB** | Pinecone | ChromaDB | Local, sin dependencias cloud |
+| **Google Gemini** | OpenAI GPT | Gemini | API gratuita, buen español |
+| **FastAPI** | Flask | FastAPI | Validación auto, docs auto |
 
 ---
 
-## 🚀 Plan de Desarrollo
+## Plan de Desarrollo
 
-### ✅ Entregado en esta Fase (MVP)
+### Entregado en esta Fase (MVP)
 
 **Infraestructura:**
 - Entorno virtual con dependencias
@@ -91,7 +142,7 @@ Cliente → FastAPI → [TranscriptionService | ChatService] → ChromaDB
 - Tests de integración (API)
 - Documentación completa
 
-### 🎯 Siguiente Paso Inmediato
+### Siguiente Paso Inmediato
 
 **Prioridad 1: Frontend Simple**
 - Interfaz React para subida de audio
@@ -105,7 +156,7 @@ Cliente → FastAPI → [TranscriptionService | ChatService] → ChromaDB
 - Validación de archivos
 - Estimación: 1-2 días
 
-### 🚀 Roadmap a Producción
+### Roadmap a Producción
 
 **Fase 2 (1-2 meses):**
 - Frontend completo
@@ -121,7 +172,7 @@ Cliente → FastAPI → [TranscriptionService | ChatService] → ChromaDB
 
 ---
 
-## 📊 Impacto y Métricas
+## Impacto y Métricas
 
 ### Logros Técnicos
 - **Precisión transcripción:** >90% en español médico
@@ -136,7 +187,7 @@ Cliente → FastAPI → [TranscriptionService | ChatService] → ChromaDB
 
 ---
 
-## 📝 Conclusiones
+## Conclusiones
 
 **Sistema funcional y escalable** que cumple todos los requerimientos MVP y algunas funcionalidades PLUS. La arquitectura modular permite desarrollo incremental y fácil mantenimiento.
 
