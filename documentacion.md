@@ -1,5 +1,5 @@
 # Documento Técnico - ElSol Challenge
-## Sistema de Procesamiento de Conversaciones Médicas
+## Asistente medico
 
 **Versión:** 1.0.0 | **Fecha:** Agosto 2025 | **Estado:** MVP Completado
 
@@ -49,71 +49,16 @@ Sistema de transcripción y análisis de conversaciones médicas que combina Ope
 ### Componentes Principales
 
 ```mermaid
-graph TB
-    subgraph "Interfaces"
-        USER[Usuario API Client]
-        BOT[Telegram Bot<br/>@ElSolMedicalApi_bot]
-    end
+graph LR
+    A[Audio/Texto] --> B[FastAPI]
+    B --> C[Whisper]
+    B --> D[Gemini]
+    C --> E[ChromaDB]
+    D --> E
+    E --> F[Respuesta]
     
-    subgraph "API Layer"
-        API[FastAPI Server]
-        UPLOAD[/process-audio]
-        CHAT[/chat]
-    end
-    
-    subgraph "Services"
-        TS[TranscriptionService]
-        CS[ChatService]
-        VS[VectorStoreService]
-        TB[TelegramBotService]
-    end
-    
-    subgraph "AI Models"
-        WHISPER[Whisper Model<br/>Local]
-        GEMINI[Google Gemini<br/>API REST]
-    end
-    
-    subgraph "Database"
-        CHROMA[(ChromaDB<br/>Vector Store)]
-    end
-    
-    %% Flujo Bot de Telegram
-    BOT -->|Audio/Text| TB
-    TB -->|Audio File| UPLOAD
-    TB -->|Question| CHAT
-    
-    %% Flujo API Direct
-    USER -->|Audio File| UPLOAD
-    USER -->|Question| CHAT
-    
-    %% Flujo de Audio
-    UPLOAD --> TS
-    TS --> WHISPER
-    TS --> VS
-    VS --> CHROMA
-    
-    %% Flujo de Chat
-    CHAT --> CS
-    CS --> GEMINI
-    CS --> VS
-    VS --> CHROMA
-    
-    %% Conexiones API
-    API --> UPLOAD
-    API --> CHAT
-    
-    %% Estilos
-    classDef interfaceStyle fill:#e8f5e8,stroke:#2e7d32,stroke-width:3px
-    classDef apiStyle fill:#e1f5fe,stroke:#01579b,stroke-width:2px
-    classDef serviceStyle fill:#f3e5f5,stroke:#4a148c,stroke-width:2px
-    classDef aiStyle fill:#fff3e0,stroke:#f57c00,stroke-width:2px
-    classDef dbStyle fill:#fce4ec,stroke:#c2185b,stroke-width:2px
-    
-    class USER,BOT interfaceStyle
-    class API,UPLOAD,CHAT apiStyle
-    class TS,CS,VS,TB serviceStyle
-    class WHISPER,GEMINI aiStyle
-    class CHROMA dbStyle
+    G[Bot Telegram] --> B
+    H[Cliente API] --> B
 ```
 
 **Servicios:**
